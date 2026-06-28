@@ -67,6 +67,13 @@ static DecodeStatus DecodeGPRRegisterClass(MCInst &Inst, unsigned RegNo,
   return MCDisassembler::Success;
 }
 
+// Used by MemDec and MemR0Idx operands: decode RegNo -> register operand.
+static DecodeStatus decodeGPRAsMem(MCInst &Inst, unsigned RegNo,
+                                   uint64_t Address,
+                                   const MCDisassembler *Decoder) {
+  return DecodeGPRRegisterClass(Inst, RegNo, Address, Decoder);
+}
+
 #include "SHGenDisassemblerTables.inc"
 
 DecodeStatus SHDisassembler::getInstruction(MCInst &Instr, uint64_t &Size,

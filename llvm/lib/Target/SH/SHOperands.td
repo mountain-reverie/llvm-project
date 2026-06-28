@@ -32,3 +32,27 @@ def SHImmAsmOperand : AsmOperandClass {
 def SHImm : Operand<i32> {
   let ParserMatchClass = SHImmAsmOperand;
 }
+
+// Pre-decrement memory operand @-Rn (holds the base register).
+def MemDecAsmOperand : AsmOperandClass {
+  let Name = "MemDec";
+  let ParserMethod = "parseMemDec";
+  let RenderMethod = "addRegOperands";
+}
+// R0-indexed memory operand @(R0,Rn) (holds the index register).
+def MemR0IdxAsmOperand : AsmOperandClass {
+  let Name = "MemR0Idx";
+  let ParserMethod = "parseMemR0Idx";
+  let RenderMethod = "addRegOperands";
+}
+
+def MemDec : RegisterOperand<GPR> {
+  let ParserMatchClass = MemDecAsmOperand;
+  let PrintMethod = "printMemDec";
+  let DecoderMethod = "decodeGPRAsMem";
+}
+def MemR0Idx : RegisterOperand<GPR> {
+  let ParserMatchClass = MemR0IdxAsmOperand;
+  let PrintMethod = "printMemR0Idx";
+  let DecoderMethod = "decodeGPRAsMem";
+}

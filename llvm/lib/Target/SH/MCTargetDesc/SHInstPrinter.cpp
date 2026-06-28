@@ -51,3 +51,11 @@ void SHInstPrinter::printOperand(const MCInst *MI, int opNum,
                                  const MCSubtargetInfo &STI, raw_ostream &O) {
   printOperand(MI, opNum, O);
 }
+
+void SHInstPrinter::printMemDec(const MCInst *MI, int OpNo, raw_ostream &O) {
+  O << "@-" << getRegisterName(MI->getOperand(OpNo).getReg());
+}
+
+void SHInstPrinter::printMemR0Idx(const MCInst *MI, int OpNo, raw_ostream &O) {
+  O << "@(r0," << getRegisterName(MI->getOperand(OpNo).getReg()) << ")";
+}

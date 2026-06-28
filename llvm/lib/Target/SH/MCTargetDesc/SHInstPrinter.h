@@ -34,6 +34,10 @@ public:
   // Called from code that has STI
   void printOperand(const MCInst *MI, int opNum, const MCSubtargetInfo &STI,
                     raw_ostream &OS);
+
+  // Custom print methods for memory operands.
+  void printMemDec(const MCInst *MI, int OpNo, raw_ostream &O);
+  void printMemR0Idx(const MCInst *MI, int OpNo, raw_ostream &O);
 };
 
 } // end namespace llvm

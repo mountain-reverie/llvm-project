@@ -32,7 +32,7 @@ using namespace llvm;
 namespace {
 
 class SHOperand : public MCParsedAsmOperand {
-  enum KindTy { k_Token, k_Register, k_Immediate } Kind;
+  enum KindTy { k_Token, k_Register, k_Immediate, k_MemDec, k_MemR0Idx } Kind;
 
   SMLoc StartLoc, EndLoc;
 
@@ -49,14 +49,16 @@ class SHOperand : public MCParsedAsmOperand {
 public:
   SHOperand(KindTy K) : Kind(K) {}
 
-  bool isToken() const override { return Kind == k_Token; }
-  bool isReg()   const override { return Kind == k_Register; }
-  bool isImm()   const override { return Kind == k_Immediate; }
-  bool isSHImm() const { return Kind == k_Immediate; }
-  bool isMem()   const override { return false; }
+  bool isToken()    const override { return Kind == k_Token; }
+  bool isReg()      const override { return Kind == k_Register; }
+  bool isImm()      const override { return Kind == k_Immediate; }
+  bool isSHImm()    const { return Kind == k_Immediate; }
+  bool isMem()      const override { return false; }
+  bool isMemDec()   const { return Kind == k_MemDec; }
+  bool isMemR0Idx() const { return Kind == k_MemR0Idx; }
 
   MCRegister getReg() const override {
-    assert(Kind == k_Register);
+    assert(Kind == k_Register || Kind == k_MemDec || Kind == k_MemR0Idx);
     return Reg.Reg;
   }
   const MCExpr *getImm() const {
@@ -80,7 +82,8 @@ public:
 
   void addRegOperands(MCInst &Inst, unsigned N) const {
     assert(N == 1);
-    Inst.addOperand(MCOperand::createReg(getReg()));
+    assert(Kind == k_Register || Kind == k_MemDec || Kind == k_MemR0Idx);
+    Inst.addOperand(MCOperand::createReg(Reg.Reg));
   }
   void addImmOperands(MCInst &Inst, unsigned N) const {
     assert(N == 1);
@@ -101,6 +104,20 @@ public:
   }
   static std::unique_ptr<SHOperand> createReg(MCRegister Reg, SMLoc S, SMLoc E) {
     auto Op = std::make_unique<SHOperand>(k_Register);
+    Op->Reg.Reg = Reg;
+    Op->StartLoc = S;
+    Op->EndLoc   = E;
+    return Op;
+  }
+  static std::unique_ptr<SHOperand> createMemDec(MCRegister Reg, SMLoc S, SMLoc E) {
+    auto Op = std::make_unique<SHOperand>(k_MemDec);
+    Op->Reg.Reg = Reg;
+    Op->StartLoc = S;
+    Op->EndLoc   = E;
+    return Op;
+  }
+  static std::unique_ptr<SHOperand> createMemR0Idx(MCRegister Reg, SMLoc S, SMLoc E) {
+    auto Op = std::make_unique<SHOperand>(k_MemR0Idx);
     Op->Reg.Reg = Reg;
     Op->StartLoc = S;
     Op->EndLoc   = E;
@@ -134,8 +151,12 @@ class SHAsmParser : public MCTargetAsmParser {
     return ParseStatus::NoMatch;
   }
 
-  bool parseOperand(OperandVector &Operands);
+  bool parseOperand(OperandVector &Operands, StringRef Mnemonic = "");
   MCRegister matchRegisterByName(StringRef Name);
+
+  // Custom operand parse methods (invoked by generated MatchOperandParserImpl).
+  ParseStatus parseMemDec(OperandVector &Operands);
+  ParseStatus parseMemR0Idx(OperandVector &Operands);
 
 public:
   SHAsmParser(const MCSubtargetInfo &STI, MCAsmParser &Parser,
@@ -179,7 +200,62 @@ ParseStatus SHAsmParser::tryParseRegister(MCRegister &Reg, SMLoc &StartLoc,
   return ParseStatus::Success;
 }
 
-bool SHAsmParser::parseOperand(OperandVector &Operands) {
+// parseMemDec — matches @-rN, pushes a MemDec operand (for MemDec class).
+// Only called by MatchOperandParserImpl when the matcher expects MCK_MemDec.
+ParseStatus SHAsmParser::parseMemDec(OperandVector &Operands) {
+  if (Parser.getTok().isNot(AsmToken::At))
+    return ParseStatus::NoMatch;
+  // Peek: next token must be '-'
+  const AsmToken &Next = Parser.getLexer().peekTok();
+  if (Next.isNot(AsmToken::Minus))
+    return ParseStatus::NoMatch;
+  SMLoc S = Parser.getTok().getLoc();
+  Parser.Lex(); // eat '@'
+  Parser.Lex(); // eat '-'
+  MCRegister Reg;
+  SMLoc RS, RE;
+  if (!tryParseRegister(Reg, RS, RE).isSuccess())
+    return Error(Parser.getTok().getLoc(), "expected register after '@-'"),
+           ParseStatus::Failure;
+  Operands.push_back(SHOperand::createMemDec(Reg, S, RE));
+  return ParseStatus::Success;
+}
+
+// parseMemR0Idx — matches @(r0,rN) where rN is a GPR.
+// Only called by MatchOperandParserImpl when the matcher expects MCK_MemR0Idx.
+// Does NOT match @(r0,gbr) — that's a fixed literal token form.
+ParseStatus SHAsmParser::parseMemR0Idx(OperandVector &Operands) {
+  if (Parser.getTok().isNot(AsmToken::At))
+    return ParseStatus::NoMatch;
+  // Peek: next must be '('
+  const AsmToken &Next = Parser.getLexer().peekTok();
+  if (Next.isNot(AsmToken::LParen))
+    return ParseStatus::NoMatch;
+  SMLoc S = Parser.getTok().getLoc();
+  Parser.Lex(); // eat '@'
+  Parser.Lex(); // eat '('
+  // Expect 'r0'
+  if (Parser.getTok().isNot(AsmToken::Identifier) ||
+      Parser.getTok().getString().lower() != "r0")
+    return ParseStatus::NoMatch;
+  Parser.Lex(); // eat 'r0'
+  if (Parser.getTok().isNot(AsmToken::Comma))
+    return ParseStatus::NoMatch;
+  Parser.Lex(); // eat ','
+  // Expect a GPR (not gbr — that case is handled as fixed literal tokens)
+  MCRegister Reg;
+  SMLoc RS, RE;
+  if (!tryParseRegister(Reg, RS, RE).isSuccess())
+    return ParseStatus::NoMatch; // let parseOperand handle @(r0,gbr) etc.
+  if (Parser.getTok().isNot(AsmToken::RParen))
+    return Error(Parser.getTok().getLoc(), "expected ')' in @(r0,rN)"),
+           ParseStatus::Failure;
+  Parser.Lex(); // eat ')'
+  Operands.push_back(SHOperand::createMemR0Idx(Reg, S, RE));
+  return ParseStatus::Success;
+}
+
+bool SHAsmParser::parseOperand(OperandVector &Operands, StringRef Mnemonic) {
   SMLoc S = Parser.getTok().getLoc();
 
   // Immediate: '#' expr
@@ -193,27 +269,127 @@ bool SHAsmParser::parseOperand(OperandVector &Operands) {
     return false;
   }
 
-  // Addressing punctuation handled as literal token operands the matcher
-  // consumes (approach A): '@', '@-' prefix and '+' suffix around a register.
-  // Indexed/fixed-register forms (@(R0,..), @-R15, bare R0/GBR) are not in the
-  // 1a-simple set and are deferred to Phase 2b-1b (proper memory operands).
+  // Handle '@' prefixed memory forms.
   if (Parser.getTok().is(AsmToken::At)) {
-    Operands.push_back(SHOperand::createToken("@", Parser.getTok().getLoc()));
-    Parser.Lex(); // eat '@'
-    if (Parser.getTok().is(AsmToken::Minus)) {
-      Operands.push_back(SHOperand::createToken("-", Parser.getTok().getLoc()));
+    // Peek ahead to decide which fixed-token form or custom operand to produce.
+    // Save state for potential backtrack via custom parsers.
+    // First try fixed forms that appear as literal tokens in AsmString:
+    //   @-r15, @r15+, @r0, @(r0,gbr)
+    // These must be produced as a single combined token string the matcher sees.
+    //
+    // Determine what follows '@':
+    const AsmToken &Next = Parser.getLexer().peekTok();
+
+    // Check for @(r0,...) — either @(r0,gbr) fixed form or @(r0,rN) custom.
+    // The custom @(r0,rN) case is handled by parseMemR0Idx via MatchOperandParserImpl
+    // BEFORE parseOperand is called, so we only reach here for @(r0,gbr).
+    // The matcher expects two literal tokens: "@(r0" and "gbr)".
+    if (Next.is(AsmToken::LParen)) {
+      SMLoc AtLoc = Parser.getTok().getLoc();
+      Parser.Lex(); // eat '@'
+      Parser.Lex(); // eat '('
+      if (Parser.getTok().is(AsmToken::Identifier) &&
+          Parser.getTok().getString().lower() == "r0") {
+        SMLoc R0Loc = Parser.getTok().getLoc();
+        Parser.Lex(); // eat 'r0'
+        if (Parser.getTok().is(AsmToken::Comma)) {
+          Parser.Lex(); // eat ','
+          if (Parser.getTok().is(AsmToken::Identifier) &&
+              Parser.getTok().getString().lower() == "gbr") {
+            SMLoc GbrLoc = Parser.getTok().getLoc();
+            Parser.Lex(); // eat 'gbr'
+            if (Parser.getTok().is(AsmToken::RParen)) {
+              Parser.Lex(); // eat ')'
+              // Matcher expects two tokens: "@(r0" and "gbr)"
+              Operands.push_back(SHOperand::createToken("@(r0", AtLoc));
+              Operands.push_back(SHOperand::createToken("gbr)", GbrLoc));
+              return false;
+            }
+          }
+        }
+      }
+      return Error(AtLoc, "unrecognized @(...) memory form");
+    }
+
+    // Check for @-r15 or @-rN (the latter handled by parseMemDec via custom parser)
+    if (Next.is(AsmToken::Minus)) {
+      SMLoc AtLoc = Parser.getTok().getLoc();
+      Parser.Lex(); // eat '@'
       Parser.Lex(); // eat '-'
+      // Check for r15 (fixed token) vs general register (custom operand already handled)
+      if (Parser.getTok().is(AsmToken::Identifier)) {
+        StringRef RegName = Parser.getTok().getString();
+        if (RegName.lower() == "r15") {
+          Parser.Lex(); // eat 'r15'
+          Operands.push_back(SHOperand::createToken("@-r15", AtLoc));
+          return false;
+        }
+        // General @-rN: reconstruct as register operand
+        MCRegister Reg = matchRegisterByName(RegName);
+        if (Reg.isValid()) {
+          SMLoc RS = Parser.getTok().getLoc();
+          SMLoc RE = Parser.getTok().getEndLoc();
+          Parser.Lex();
+          Operands.push_back(SHOperand::createReg(Reg, RS, RE));
+          return false;
+        }
+      }
+      return Error(Parser.getTok().getLoc(), "expected register after '@-'");
     }
-    MCRegister Reg;
-    SMLoc RS, RE;
-    if (!tryParseRegister(Reg, RS, RE).isSuccess())
-      return Error(Parser.getTok().getLoc(), "expected register after '@'");
-    Operands.push_back(SHOperand::createReg(Reg, RS, RE));
-    if (Parser.getTok().is(AsmToken::Plus)) {
-      Operands.push_back(SHOperand::createToken("+", Parser.getTok().getLoc()));
-      Parser.Lex(); // eat '+'
+
+    // @rN or @rN+
+    SMLoc AtLoc = Parser.getTok().getLoc();
+    Parser.Lex(); // eat '@'
+    if (Parser.getTok().is(AsmToken::Identifier)) {
+      StringRef RegName = Parser.getTok().getString();
+      // Check @r15+ (fixed token for movml pop)
+      if (RegName.lower() == "r15") {
+        SMLoc RS = Parser.getTok().getLoc();
+        Parser.Lex(); // eat 'r15'
+        if (Parser.getTok().is(AsmToken::Plus)) {
+          Parser.Lex(); // eat '+'
+          Operands.push_back(SHOperand::createToken("@r15+", AtLoc));
+          return false;
+        }
+        // @r15 without '+': a register operand
+        Operands.push_back(SHOperand::createToken("@", AtLoc));
+        MCRegister Reg = matchRegisterByName("r15");
+        Operands.push_back(SHOperand::createReg(Reg, RS, RS));
+        return false;
+      }
+      // @r0 (fixed token for cas.l)
+      if (RegName.lower() == "r0") {
+        SMLoc RS = Parser.getTok().getLoc();
+        Parser.Lex(); // eat 'r0'
+        if (Parser.getTok().is(AsmToken::Plus)) {
+          // @r0+  — post-increment form (generic)
+          Parser.Lex();
+          Operands.push_back(SHOperand::createToken("@", AtLoc));
+          MCRegister Reg = matchRegisterByName("r0");
+          Operands.push_back(SHOperand::createReg(Reg, RS, RS));
+          Operands.push_back(SHOperand::createToken("+", RS));
+          return false;
+        }
+        // Bare @r0
+        Operands.push_back(SHOperand::createToken("@r0", AtLoc));
+        return false;
+      }
+      // Generic @rN or @rN+
+      MCRegister Reg = matchRegisterByName(RegName);
+      if (Reg.isValid()) {
+        SMLoc RS = Parser.getTok().getLoc();
+        SMLoc RE = Parser.getTok().getEndLoc();
+        Parser.Lex();
+        Operands.push_back(SHOperand::createToken("@", AtLoc));
+        Operands.push_back(SHOperand::createReg(Reg, RS, RE));
+        if (Parser.getTok().is(AsmToken::Plus)) {
+          Operands.push_back(SHOperand::createToken("+", Parser.getTok().getLoc()));
+          Parser.Lex();
+        }
+        return false;
+      }
     }
-    return false;
+    return Error(Parser.getTok().getLoc(), "expected register after '@'");
   }
 
   MCRegister Reg;
@@ -257,12 +433,20 @@ bool SHAsmParser::parseInstruction(ParseInstructionInfo &Info, StringRef Name,
   if (Parser.getTok().is(AsmToken::EndOfStatement))
     return false;
 
-  if (parseOperand(Operands))
+  // Try generated custom-operand parser first, fall back to generic parseOperand.
+  auto parseOne = [&]() -> bool {
+    ParseStatus Res = MatchOperandParserImpl(Operands, FullName, /*isPredicable=*/false);
+    if (Res.isSuccess()) return false;
+    if (Res.isFailure()) return true;
+    return parseOperand(Operands, FullName);
+  };
+
+  if (parseOne())
     return true;
 
   while (Parser.getTok().is(AsmToken::Comma)) {
     Parser.Lex();
-    if (parseOperand(Operands))
+    if (parseOne())
       return true;
   }
 
