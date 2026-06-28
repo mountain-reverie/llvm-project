@@ -23,3 +23,12 @@ def HasSH4A : Predicate<"Subtarget->hasSH4A()">;
 def HasJ1   : Predicate<"Subtarget->hasJ1()">;
 def HasJ2   : Predicate<"Subtarget->hasJ2()">;
 def HasJ4   : Predicate<"Subtarget->hasJ4()">;
+
+// Immediate operand for SH (AsmParser match + default print/decode).
+def SHImmAsmOperand : AsmOperandClass {
+  let Name = "SHImm";
+  let RenderMethod = "addImmOperands";
+}
+def SHImm : Operand<i32> {
+  let ParserMatchClass = SHImmAsmOperand;
+}

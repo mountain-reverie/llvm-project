@@ -52,6 +52,7 @@ public:
   bool isToken() const override { return Kind == k_Token; }
   bool isReg()   const override { return Kind == k_Register; }
   bool isImm()   const override { return Kind == k_Immediate; }
+  bool isSHImm() const { return Kind == k_Immediate; }
   bool isMem()   const override { return false; }
 
   MCRegister getReg() const override {
@@ -181,6 +182,40 @@ ParseStatus SHAsmParser::tryParseRegister(MCRegister &Reg, SMLoc &StartLoc,
 bool SHAsmParser::parseOperand(OperandVector &Operands) {
   SMLoc S = Parser.getTok().getLoc();
 
+  // Immediate: '#' expr
+  if (Parser.getTok().is(AsmToken::Hash)) {
+    Parser.Lex(); // eat '#'
+    const MCExpr *Expr;
+    SMLoc IS = Parser.getTok().getLoc();
+    if (Parser.parseExpression(Expr))
+      return Error(IS, "expected immediate expression after '#'");
+    Operands.push_back(SHOperand::createImm(Expr, S, Parser.getTok().getLoc()));
+    return false;
+  }
+
+  // Addressing punctuation handled as literal token operands the matcher
+  // consumes (approach A): '@', '@-' prefix and '+' suffix around a register.
+  // Indexed/fixed-register forms (@(R0,..), @-R15, bare R0/GBR) are not in the
+  // 1a-simple set and are deferred to Phase 2b-1b (proper memory operands).
+  if (Parser.getTok().is(AsmToken::At)) {
+    Operands.push_back(SHOperand::createToken("@", Parser.getTok().getLoc()));
+    Parser.Lex(); // eat '@'
+    if (Parser.getTok().is(AsmToken::Minus)) {
+      Operands.push_back(SHOperand::createToken("-", Parser.getTok().getLoc()));
+      Parser.Lex(); // eat '-'
+    }
+    MCRegister Reg;
+    SMLoc RS, RE;
+    if (!tryParseRegister(Reg, RS, RE).isSuccess())
+      return Error(Parser.getTok().getLoc(), "expected register after '@'");
+    Operands.push_back(SHOperand::createReg(Reg, RS, RE));
+    if (Parser.getTok().is(AsmToken::Plus)) {
+      Operands.push_back(SHOperand::createToken("+", Parser.getTok().getLoc()));
+      Parser.Lex(); // eat '+'
+    }
+    return false;
+  }
+
   MCRegister Reg;
   SMLoc E;
   if (tryParseRegister(Reg, S, E).isSuccess()) {
@@ -199,7 +234,25 @@ bool SHAsmParser::parseOperand(OperandVector &Operands) {
 
 bool SHAsmParser::parseInstruction(ParseInstructionInfo &Info, StringRef Name,
                                    SMLoc NameLoc, OperandVector &Operands) {
-  Operands.push_back(SHOperand::createToken(Name, NameLoc));
+  // SH mnemonics such as cmp/eq, cmp/pl, cmp/str contain '/', which the generic
+  // lexer does not fold into the mnemonic identifier. Reconstruct the full
+  // mnemonic by consuming trailing "/<suffix>" sequences (the characters are
+  // contiguous in the source buffer, so a single StringRef spans them).
+  // Note: `Name` is a lowercased std::string copy (not a StringRef into the
+  // source buffer), so span the mnemonic from the source via NameLoc, which
+  // points at the mnemonic start in the (stable) source buffer. SH source is
+  // lowercase by convention, so the spanned text matches the matcher table.
+  StringRef FullName = Name;
+  const char *Begin = NameLoc.getPointer();
+  while (Begin && Parser.getTok().is(AsmToken::Slash)) {
+    Parser.Lex(); // eat '/'
+    if (Parser.getTok().isNot(AsmToken::Identifier))
+      return Error(Parser.getTok().getLoc(), "expected mnemonic suffix after '/'");
+    StringRef Suf = Parser.getTok().getIdentifier();
+    FullName = StringRef(Begin, Suf.data() + Suf.size() - Begin);
+    Parser.Lex(); // eat suffix
+  }
+  Operands.push_back(SHOperand::createToken(FullName, NameLoc));
 
   if (Parser.getTok().is(AsmToken::EndOfStatement))
     return false;
