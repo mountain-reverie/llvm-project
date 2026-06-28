@@ -74,6 +74,26 @@ static DecodeStatus decodeGPRAsMem(MCInst &Inst, unsigned RegNo,
   return DecodeGPRRegisterClass(Inst, RegNo, Address, Decoder);
 }
 
+// Fixed-register operand decoders: add implied value (no bits consumed).
+static DecodeStatus decodeMemR0Fixed(MCInst &Inst, unsigned Val,
+                                     uint64_t Address,
+                                     const MCDisassembler *Dec) {
+  Inst.addOperand(MCOperand::createImm(0));
+  return MCDisassembler::Success;
+}
+static DecodeStatus decodeMemDecR15(MCInst &Inst, unsigned Val,
+                                    uint64_t Address,
+                                    const MCDisassembler *Dec) {
+  Inst.addOperand(MCOperand::createReg(SH::R15));
+  return MCDisassembler::Success;
+}
+static DecodeStatus decodeMemIncR15(MCInst &Inst, unsigned Val,
+                                    uint64_t Address,
+                                    const MCDisassembler *Dec) {
+  Inst.addOperand(MCOperand::createImm(0));
+  return MCDisassembler::Success;
+}
+
 static DecodeStatus decodeDisp_s1(MCInst &Inst, unsigned Val, uint64_t Address,
                                   const MCDisassembler *Dec) {
   Inst.addOperand(MCOperand::createImm(Val * 1));

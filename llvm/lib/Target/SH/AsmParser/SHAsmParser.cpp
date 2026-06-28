@@ -32,7 +32,10 @@ using namespace llvm;
 namespace {
 
 class SHOperand : public MCParsedAsmOperand {
-  enum KindTy { k_Token, k_Register, k_Immediate, k_MemDec, k_MemR0Idx } Kind;
+  enum KindTy {
+    k_Token, k_Register, k_Immediate, k_MemDec, k_MemR0Idx,
+    k_MemR0Fixed, k_MemIncR15
+  } Kind;
 
   SMLoc StartLoc, EndLoc;
 
@@ -49,14 +52,17 @@ class SHOperand : public MCParsedAsmOperand {
 public:
   SHOperand(KindTy K) : Kind(K) {}
 
-  bool isToken()    const override { return Kind == k_Token; }
-  bool isReg()      const override { return Kind == k_Register; }
-  bool isImm()      const override { return Kind == k_Immediate; }
-  bool isSHImm()    const { return Kind == k_Immediate; }
-  bool isDisp()     const { return Kind == k_Immediate; }
-  bool isMem()      const override { return false; }
-  bool isMemDec()   const { return Kind == k_MemDec; }
-  bool isMemR0Idx() const { return Kind == k_MemR0Idx; }
+  bool isToken()      const override { return Kind == k_Token; }
+  bool isReg()        const override { return Kind == k_Register; }
+  bool isImm()        const override { return Kind == k_Immediate; }
+  bool isSHImm()      const { return Kind == k_Immediate; }
+  bool isDisp()       const { return Kind == k_Immediate; }
+  bool isMem()        const override { return false; }
+  bool isMemDec()     const { return Kind == k_MemDec; }
+  bool isMemR0Idx()   const { return Kind == k_MemR0Idx; }
+  bool isMemR0Fixed() const { return Kind == k_MemR0Fixed; }
+  bool isMemDecR15()  const { return Kind == k_MemDec && Reg.Reg == SH::R15; }
+  bool isMemIncR15()  const { return Kind == k_MemIncR15; }
 
   MCRegister getReg() const override {
     assert(Kind == k_Register || Kind == k_MemDec || Kind == k_MemR0Idx);
@@ -85,6 +91,14 @@ public:
     assert(N == 1);
     assert(Kind == k_Register || Kind == k_MemDec || Kind == k_MemR0Idx);
     Inst.addOperand(MCOperand::createReg(Reg.Reg));
+  }
+  void addMemR0FixedOperands(MCInst &Inst, unsigned N) const {
+    assert(N == 1);
+    Inst.addOperand(MCOperand::createImm(0));
+  }
+  void addMemIncR15Operands(MCInst &Inst, unsigned N) const {
+    assert(N == 1);
+    Inst.addOperand(MCOperand::createImm(0));
   }
   void addImmOperands(MCInst &Inst, unsigned N) const {
     assert(N == 1);
@@ -131,6 +145,18 @@ public:
     Op->EndLoc   = E;
     return Op;
   }
+  static std::unique_ptr<SHOperand> createMemR0Fixed(SMLoc S, SMLoc E) {
+    auto Op = std::make_unique<SHOperand>(k_MemR0Fixed);
+    Op->StartLoc = S;
+    Op->EndLoc   = E;
+    return Op;
+  }
+  static std::unique_ptr<SHOperand> createMemIncR15(SMLoc S, SMLoc E) {
+    auto Op = std::make_unique<SHOperand>(k_MemIncR15);
+    Op->StartLoc = S;
+    Op->EndLoc   = E;
+    return Op;
+  }
 };
 
 class SHAsmParser : public MCTargetAsmParser {
@@ -165,6 +191,8 @@ private:
   // Custom operand parse methods (invoked by generated MatchOperandParserImpl).
   ParseStatus parseMemDec(OperandVector &Operands);
   ParseStatus parseMemR0Idx(OperandVector &Operands);
+  ParseStatus parseMemR0Fixed(OperandVector &Operands);
+  ParseStatus parseMemIncR15(OperandVector &Operands);
 
 public:
   SHAsmParser(const MCSubtargetInfo &STI, MCAsmParser &Parser,
@@ -233,6 +261,45 @@ ParseStatus SHAsmParser::parseMemDec(OperandVector &Operands) {
 // handled by parseOperand so this custom parser never consumes tokens.
 ParseStatus SHAsmParser::parseMemR0Idx(OperandVector &Operands) {
   return ParseStatus::NoMatch;
+}
+
+// parseMemR0Fixed — matches @r0 (without '+') for cas.l Rm,Rn,@R0.
+// Only invoked for mnemonics that use MemR0Fixed (mnemonic-scoped via matcher).
+ParseStatus SHAsmParser::parseMemR0Fixed(OperandVector &Operands) {
+  if (Parser.getTok().isNot(AsmToken::At))
+    return ParseStatus::NoMatch;
+  const AsmToken &Next = Parser.getLexer().peekTok();
+  if (!Next.is(AsmToken::Identifier) || Next.getString().lower() != "r0")
+    return ParseStatus::NoMatch;
+  SMLoc S = Parser.getTok().getLoc();
+  Parser.Lex(); // eat '@'
+  SMLoc E = Parser.getTok().getEndLoc();
+  Parser.Lex(); // eat 'r0'
+  // Reject @r0+ (that's @Rm+ with rm=0, not a MemR0Fixed form)
+  if (Parser.getTok().is(AsmToken::Plus))
+    return ParseStatus::NoMatch;
+  Operands.push_back(SHOperand::createMemR0Fixed(S, E));
+  return ParseStatus::Success;
+}
+
+// parseMemIncR15 — matches @r15+ for movml.l/movmu.l @R15+,Rn.
+// Only invoked for mnemonics that use MemIncR15 (mnemonic-scoped via matcher).
+ParseStatus SHAsmParser::parseMemIncR15(OperandVector &Operands) {
+  if (Parser.getTok().isNot(AsmToken::At))
+    return ParseStatus::NoMatch;
+  const AsmToken &Next = Parser.getLexer().peekTok();
+  if (!Next.is(AsmToken::Identifier) || Next.getString().lower() != "r15")
+    return ParseStatus::NoMatch;
+  SMLoc S = Parser.getTok().getLoc();
+  Parser.Lex(); // eat '@'
+  SMLoc E = Parser.getTok().getEndLoc();
+  Parser.Lex(); // eat 'r15'
+  if (Parser.getTok().isNot(AsmToken::Plus))
+    return Error(Parser.getTok().getLoc(), "expected '+' after '@r15'"),
+           ParseStatus::Failure;
+  Parser.Lex(); // eat '+'
+  Operands.push_back(SHOperand::createMemIncR15(S, E));
+  return ParseStatus::Success;
 }
 
 bool SHAsmParser::parseOperand(OperandVector &Operands, StringRef Mnemonic) {

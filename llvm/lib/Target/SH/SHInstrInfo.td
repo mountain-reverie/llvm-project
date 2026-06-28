@@ -1023,6 +1023,134 @@ def MOVUA_L_MemPostInc_R0Fixed : Instruction {
   let Predicates = [HasSH4A];
 }
 
+def MOVML_L_GPR_MemPreDec : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let isAsmParserOnly = 1;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 1;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, MemDecR15:$fm);
+  let AsmString = "movml.l\t${rm}, ${fm}";
+  let Predicates = [HasSH2A];
+}
+
+def MOVML_L_MemPostInc_GPR : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let isAsmParserOnly = 1;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 1;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins MemIncR15:$fm, GPR:$rn);
+  let AsmString = "movml.l\t${fm}, ${rn}";
+  let Predicates = [HasSH2A];
+}
+
+def MOVMU_L_GPR_MemPreDec : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let isAsmParserOnly = 1;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 1;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, MemDecR15:$fm);
+  let AsmString = "movmu.l\t${rm}, ${fm}";
+  let Predicates = [HasSH2A];
+}
+
+def MOVMU_L_MemPostInc_GPR : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let isAsmParserOnly = 1;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 1;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins MemIncR15:$fm, GPR:$rn);
+  let AsmString = "movmu.l\t${fm}, ${rn}";
+  let Predicates = [HasSH2A];
+}
+
+def CAS_L_GPR_GPR_MemReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let isAsmParserOnly = 1;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 1;
+  let Inst{12} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, GPR:$rn, MemR0Fixed:$fm);
+  let AsmString = "cas.l\t${rm}, ${rn}, ${fm}";
+  let Predicates = [HasJ2];
+}
+
 def MOVRT_GPR : Instruction {
   let Namespace = "SH";
   bits<16> Inst;

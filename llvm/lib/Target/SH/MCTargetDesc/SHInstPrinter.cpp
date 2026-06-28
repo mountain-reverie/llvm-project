@@ -60,6 +60,18 @@ void SHInstPrinter::printMemR0Idx(const MCInst *MI, int OpNo, raw_ostream &O) {
   O << "@(r0," << getRegisterName(MI->getOperand(OpNo).getReg()) << ")";
 }
 
+void SHInstPrinter::printMemR0Fixed(const MCInst *MI, int OpNo, raw_ostream &O) {
+  O << "@r0";
+}
+
+void SHInstPrinter::printMemDecR15(const MCInst *MI, int OpNo, raw_ostream &O) {
+  O << "@-r15";
+}
+
+void SHInstPrinter::printMemIncR15(const MCInst *MI, int OpNo, raw_ostream &O) {
+  O << "@r15+";
+}
+
 void SHInstPrinter::printDisp(const MCInst *MI, int OpNo, raw_ostream &O) {
   O << MI->getOperand(OpNo).getImm();
 }

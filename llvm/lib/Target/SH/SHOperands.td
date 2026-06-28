@@ -57,6 +57,42 @@ def MemR0Idx : RegisterOperand<GPR> {
   let DecoderMethod = "decodeGPRAsMem";
 }
 
+// Fixed-register constrained memory operands (no encoding bits).
+// @r0 — used by cas.l Rm,Rn,@R0.
+def MemR0FixedAsmOperand : AsmOperandClass {
+  let Name = "MemR0Fixed";
+  let ParserMethod = "parseMemR0Fixed";
+  let RenderMethod = "addMemR0FixedOperands";
+}
+// @-r15 — used by movml.l/movmu.l Rm,@-R15.
+def MemDecR15AsmOperand : AsmOperandClass {
+  let Name = "MemDecR15";
+  // No ParserMethod: falls back to parseOperand (produces k_MemDec(R15)).
+  let RenderMethod = "addRegOperands";
+}
+// @r15+ — used by movml.l/movmu.l @R15+,Rn.
+def MemIncR15AsmOperand : AsmOperandClass {
+  let Name = "MemIncR15";
+  let ParserMethod = "parseMemIncR15";
+  let RenderMethod = "addMemIncR15Operands";
+}
+
+def MemR0Fixed : Operand<i32> {
+  let ParserMatchClass = MemR0FixedAsmOperand;
+  let PrintMethod = "printMemR0Fixed";
+  let DecoderMethod = "decodeMemR0Fixed";
+}
+def MemDecR15 : Operand<i32> {
+  let ParserMatchClass = MemDecR15AsmOperand;
+  let PrintMethod = "printMemDecR15";
+  let DecoderMethod = "decodeMemDecR15";
+}
+def MemIncR15 : Operand<i32> {
+  let ParserMatchClass = MemIncR15AsmOperand;
+  let PrintMethod = "printMemIncR15";
+  let DecoderMethod = "decodeMemIncR15";
+}
+
 // Scaled displacement operand. The AsmParser stores the BYTE offset;
 // the encoder divides by the scale factor, the decoder multiplies back.
 def DispAsmOperand : AsmOperandClass {
