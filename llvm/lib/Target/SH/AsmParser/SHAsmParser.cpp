@@ -57,6 +57,74 @@ public:
   bool isImm()        const override { return Kind == k_Immediate; }
   bool isSHImm()      const { return Kind == k_Immediate; }
   bool isDisp()       const { return Kind == k_Immediate; }
+
+  // Per-class displacement predicates. Non-constant expressions (symbols)
+  // pass for pcdisp* (the fixup path handles range checking); all others
+  // require a known constant in the valid range.
+  bool isMemdisp_b4() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return V >= 0 && V <= 15;
+    }
+    return false;
+  }
+  bool isMemdisp_w4() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return V % 2 == 0 && V / 2 >= 0 && V / 2 <= 15;
+    }
+    return false;
+  }
+  bool isMemdisp_l4() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return V % 4 == 0 && V / 4 >= 0 && V / 4 <= 15;
+    }
+    return false;
+  }
+  bool isGbrdisp_b8() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return V >= 0 && V <= 255;
+    }
+    return false;
+  }
+  bool isGbrdisp_w8() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return V % 2 == 0 && V / 2 >= 0 && V / 2 <= 255;
+    }
+    return false;
+  }
+  bool isGbrdisp_l8() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return V % 4 == 0 && V / 4 >= 0 && V / 4 <= 255;
+    }
+    return false;
+  }
+  bool isPcdisp_w8() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return V % 2 == 0 && V / 2 >= 0 && V / 2 <= 255;
+    }
+    return true; // non-constant expr: let fixup handle range
+  }
+  bool isPcdisp_l8() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return V % 4 == 0 && V / 4 >= 0 && V / 4 <= 255;
+    }
+    return true; // non-constant expr: let fixup handle range
+  }
   bool isMem()        const override { return false; }
   bool isMemDec()     const { return Kind == k_MemDec; }
   bool isMemR0Idx()   const { return Kind == k_MemR0Idx; }

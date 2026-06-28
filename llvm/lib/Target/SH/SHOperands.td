@@ -93,37 +93,49 @@ def MemIncR15 : Operand<i32> {
   let DecoderMethod = "decodeMemIncR15";
 }
 
-// Scaled displacement operand. The AsmParser stores the BYTE offset;
+// Scaled displacement operands. The AsmParser stores the BYTE offset;
 // the encoder divides by the scale factor, the decoder multiplies back.
-def DispAsmOperand : AsmOperandClass {
-  let Name = "Disp";
+// Each operand class has a per-class AsmOperandClass for range+scale validation.
+
+class SHDispAsmOperand<string N, string Pred> : AsmOperandClass {
+  let Name = N;
   let RenderMethod = "addImmOperands";
   let DiagnosticType = "InvalidDisp";
+  let PredicateMethod = Pred;
 }
 
-class SHDispOperand<string scale> : Operand<i32> {
-  let ParserMatchClass = DispAsmOperand;
+def Memdisp_b4AsmOperand : SHDispAsmOperand<"Memdisp_b4", "isMemdisp_b4">;
+def Memdisp_w4AsmOperand : SHDispAsmOperand<"Memdisp_w4", "isMemdisp_w4">;
+def Memdisp_l4AsmOperand : SHDispAsmOperand<"Memdisp_l4", "isMemdisp_l4">;
+def Gbrdisp_b8AsmOperand : SHDispAsmOperand<"Gbrdisp_b8", "isGbrdisp_b8">;
+def Gbrdisp_w8AsmOperand : SHDispAsmOperand<"Gbrdisp_w8", "isGbrdisp_w8">;
+def Gbrdisp_l8AsmOperand : SHDispAsmOperand<"Gbrdisp_l8", "isGbrdisp_l8">;
+def Pcdisp_w8AsmOperand  : SHDispAsmOperand<"Pcdisp_w8",  "isPcdisp_w8">;
+def Pcdisp_l8AsmOperand  : SHDispAsmOperand<"Pcdisp_l8",  "isPcdisp_l8">;
+
+class SHDispOperand<AsmOperandClass MC, string scale> : Operand<i32> {
+  let ParserMatchClass = MC;
   let PrintMethod = "printDisp";
   let EncoderMethod = "getDisp_s"#scale;
   let DecoderMethod = "decodeDisp_s"#scale;
 }
 
 // 4-bit displacement fields, scaled by access size.
-def memdisp_b4 : SHDispOperand<"1">;
-def memdisp_w4 : SHDispOperand<"2">;
-def memdisp_l4 : SHDispOperand<"4">;
+def memdisp_b4 : SHDispOperand<Memdisp_b4AsmOperand, "1">;
+def memdisp_w4 : SHDispOperand<Memdisp_w4AsmOperand, "2">;
+def memdisp_l4 : SHDispOperand<Memdisp_l4AsmOperand, "4">;
 // 8-bit displacement fields for GBR-relative addressing.
-def gbrdisp_b8 : SHDispOperand<"1">;
-def gbrdisp_w8 : SHDispOperand<"2">;
-def gbrdisp_l8 : SHDispOperand<"4">;
+def gbrdisp_b8 : SHDispOperand<Gbrdisp_b8AsmOperand, "1">;
+def gbrdisp_w8 : SHDispOperand<Gbrdisp_w8AsmOperand, "2">;
+def gbrdisp_l8 : SHDispOperand<Gbrdisp_l8AsmOperand, "4">;
 // 8-bit displacement fields for PC-relative addressing.
 // Dedicated encoder methods emit a fixup when the operand is a symbol.
-class SHPCDispOperand<string scale, string enc> : Operand<i32> {
-  let ParserMatchClass = DispAsmOperand;
+class SHPCDispOperand<AsmOperandClass MC, string scale, string enc> : Operand<i32> {
+  let ParserMatchClass = MC;
   let PrintMethod = "printDisp";
   let EncoderMethod = enc;
   let DecoderMethod = "decodeDisp_s"#scale;
 }
-def pcdisp_w8  : SHPCDispOperand<"2", "getPCDisp_s2">;
-def pcdisp_l8  : SHPCDispOperand<"4", "getPCDisp_s4">;
+def pcdisp_w8  : SHPCDispOperand<Pcdisp_w8AsmOperand, "2", "getPCDisp_s2">;
+def pcdisp_l8  : SHPCDispOperand<Pcdisp_l8AsmOperand, "4", "getPCDisp_s4">;
 
