@@ -15,9 +15,11 @@ namespace llvm {
 namespace SH {
 
 enum Fixups {
-  // Marker — no target-specific fixups yet.
-  LastTargetFixupKind = FirstTargetFixupKind,
-  NumTargetFixupKinds = LastTargetFixupKind - FirstTargetFixupKind
+  // R_SH_DIR8WPZ (6): PC-relative word-scaled 8-bit displacement (mov.w)
+  fixup_sh_pcrel8_w = FirstTargetFixupKind,
+  // R_SH_DIR8WPL (5): PC-relative longword-scaled 8-bit displacement (mov.l, mova)
+  fixup_sh_pcrel8_l,
+  NumTargetFixupKinds = fixup_sh_pcrel8_l - FirstTargetFixupKind + 1
 };
 
 } // namespace SH

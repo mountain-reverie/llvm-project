@@ -6,9 +6,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "MCTargetDesc/SHFixupKinds.h"
 #include "SHMCTargetDesc.h"
 #include "llvm/MC/MCCodeEmitter.h"
 #include "llvm/MC/MCContext.h"
+#include "llvm/MC/MCExpr.h"
 #include "llvm/MC/MCFixup.h"
 #include "llvm/MC/MCInst.h"
 #include "llvm/MC/MCInstrDesc.h"
@@ -61,6 +63,36 @@ public:
                       SmallVectorImpl<MCFixup> &Fixups,
                       const MCSubtargetInfo &STI) const {
     return static_cast<unsigned>(MI.getOperand(OpNo).getImm()) / 4;
+  }
+
+  // PC-relative displacement encoders: handle both concrete immediates and
+  // symbol expressions. For a symbol, push a fixup and emit 0.
+  unsigned getPCDisp_s2(const MCInst &MI, unsigned OpNo,
+                        SmallVectorImpl<MCFixup> &Fixups,
+                        const MCSubtargetInfo &STI) const {
+    const MCOperand &MO = MI.getOperand(OpNo);
+    if (MO.isImm())
+      return static_cast<unsigned>(MO.getImm()) / 2;
+    // Symbol expression: emit a fixup and return 0 for the displacement field.
+    assert(MO.isExpr() && "Expected immediate or expression");
+    Fixups.push_back(MCFixup::create(0, MO.getExpr(),
+                                     MCFixupKind(SH::fixup_sh_pcrel8_w),
+                                     /*PCRel=*/true));
+    return 0;
+  }
+
+  unsigned getPCDisp_s4(const MCInst &MI, unsigned OpNo,
+                        SmallVectorImpl<MCFixup> &Fixups,
+                        const MCSubtargetInfo &STI) const {
+    const MCOperand &MO = MI.getOperand(OpNo);
+    if (MO.isImm())
+      return static_cast<unsigned>(MO.getImm()) / 4;
+    // Symbol expression: emit a fixup and return 0 for the displacement field.
+    assert(MO.isExpr() && "Expected immediate or expression");
+    Fixups.push_back(MCFixup::create(0, MO.getExpr(),
+                                     MCFixupKind(SH::fixup_sh_pcrel8_l),
+                                     /*PCRel=*/true));
+    return 0;
   }
 };
 

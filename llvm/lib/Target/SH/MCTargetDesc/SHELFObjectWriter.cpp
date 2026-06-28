@@ -6,6 +6,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "MCTargetDesc/SHFixupKinds.h"
 #include "SHMCTargetDesc.h"
 #include "llvm/BinaryFormat/ELF.h"
 #include "llvm/MC/MCELFObjectWriter.h"
@@ -28,7 +29,15 @@ public:
 protected:
   unsigned getRelocType(const MCFixup &Fixup, const MCValue &Target,
                         bool IsPCRel) const override {
-    return 0; // R_SH_NONE
+    // Relocation type values from binutils include/elf/sh.h.
+    switch (Fixup.getKind()) {
+    case MCFixupKind(SH::fixup_sh_pcrel8_w):
+      return 6; // R_SH_DIR8WPZ: PC-relative, byte/2, zero-extended
+    case MCFixupKind(SH::fixup_sh_pcrel8_l):
+      return 5; // R_SH_DIR8WPL: PC-relative, byte/4, longword-aligned base
+    default:
+      return 0; // R_SH_NONE
+    }
   }
 };
 

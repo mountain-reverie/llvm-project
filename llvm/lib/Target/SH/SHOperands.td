@@ -81,6 +81,13 @@ def gbrdisp_b8 : SHDispOperand<"1">;
 def gbrdisp_w8 : SHDispOperand<"2">;
 def gbrdisp_l8 : SHDispOperand<"4">;
 // 8-bit displacement fields for PC-relative addressing.
-def pcdisp_w8  : SHDispOperand<"2">;
-def pcdisp_l8  : SHDispOperand<"4">;
+// Dedicated encoder methods emit a fixup when the operand is a symbol.
+class SHPCDispOperand<string scale, string enc> : Operand<i32> {
+  let ParserMatchClass = DispAsmOperand;
+  let PrintMethod = "printDisp";
+  let EncoderMethod = enc;
+  let DecoderMethod = "decodeDisp_s"#scale;
+}
+def pcdisp_w8  : SHPCDispOperand<"2", "getPCDisp_s2">;
+def pcdisp_l8  : SHPCDispOperand<"4", "getPCDisp_s4">;
 
