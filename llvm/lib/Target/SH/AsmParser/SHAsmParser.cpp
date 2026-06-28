@@ -242,11 +242,15 @@ ParseStatus SHAsmParser::parseMemR0Idx(OperandVector &Operands) {
   if (Parser.getTok().isNot(AsmToken::Comma))
     return ParseStatus::NoMatch;
   Parser.Lex(); // eat ','
-  // Expect a GPR (not gbr — that case is handled as fixed literal tokens)
+  // Expect a GPR. We have already consumed "@(r0," so this is a committed
+  // parse — a missing register is a hard error (returning NoMatch here would
+  // leave the lexer mid-operand). The @(r0,gbr) fixed form never routes here
+  // (gbr is not a GPR operand class).
   MCRegister Reg;
   SMLoc RS, RE;
   if (!tryParseRegister(Reg, RS, RE).isSuccess())
-    return ParseStatus::NoMatch; // let parseOperand handle @(r0,gbr) etc.
+    return Error(Parser.getTok().getLoc(), "expected register in @(r0,rN)"),
+           ParseStatus::Failure;
   if (Parser.getTok().isNot(AsmToken::RParen))
     return Error(Parser.getTok().getLoc(), "expected ')' in @(r0,rN)"),
            ParseStatus::Failure;
