@@ -12,6 +12,8 @@
 #include "llvm/MC/MCELFObjectWriter.h"
 #include "llvm/MC/MCFixup.h"
 #include "llvm/MC/MCObjectWriter.h"
+#include "llvm/MC/MCAssembler.h"
+#include "llvm/MC/MCContext.h"
 #include "llvm/MC/MCSubtargetInfo.h"
 #include "llvm/MC/MCValue.h"
 #include "llvm/MC/TargetRegistry.h"
@@ -61,11 +63,18 @@ public:
       // target = (PC + 4) + disp*2  =>  disp = (S+A-P - 4) / 2
       Encoded = (SVal - 4) / 2;
       break;
-    case SH::fixup_sh_pcrel8_l - FirstTargetFixupKind:
-      // target = ((PC+4) & ~3) + disp*4
-      // Assume instruction is 4-byte aligned (common case): disp = (SVal-4)/4
-      Encoded = (SVal - 4) / 4;
+    case SH::fixup_sh_pcrel8_l - FirstTargetFixupKind: {
+      // target = ((P+4) & ~3) + disp*4  =>  disp = (SVal - 4 + (P & 3)) / 4
+      int64_t P = static_cast<int64_t>(
+          Asm->getFragmentOffset(F) + Fixup.getOffset());
+      Encoded = (SVal - 4 + (P & 3)) / 4;
+      if (Encoded < 0 || Encoded > 255) {
+        getContext().reportError(Fixup.getLoc(),
+                                 "fixup_sh_pcrel8_l displacement out of range");
+        return;
+      }
       break;
+    }
     default:
       return;
     }
