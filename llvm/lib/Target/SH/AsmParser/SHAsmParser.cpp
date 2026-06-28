@@ -53,6 +53,7 @@ public:
   bool isReg()      const override { return Kind == k_Register; }
   bool isImm()      const override { return Kind == k_Immediate; }
   bool isSHImm()    const { return Kind == k_Immediate; }
+  bool isDisp()     const { return Kind == k_Immediate; }
   bool isMem()      const override { return false; }
   bool isMemDec()   const { return Kind == k_MemDec; }
   bool isMemR0Idx() const { return Kind == k_MemR0Idx; }
@@ -138,6 +139,13 @@ class SHAsmParser : public MCTargetAsmParser {
 #define GET_ASSEMBLER_HEADER
 #include "SHGenAsmMatcher.inc"
 
+public:
+  enum {
+#define GET_OPERAND_DIAGNOSTIC_TYPES
+#include "SHGenAsmMatcher.inc"
+  };
+
+private:
   bool matchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
                                OperandVector &Operands, MCStreamer &Out,
                                uint64_t &ErrorInfo,
@@ -221,42 +229,10 @@ ParseStatus SHAsmParser::parseMemDec(OperandVector &Operands) {
   return ParseStatus::Success;
 }
 
-// parseMemR0Idx — matches @(r0,rN) where rN is a GPR.
-// Only called by MatchOperandParserImpl when the matcher expects MCK_MemR0Idx.
-// Does NOT match @(r0,gbr) — that's a fixed literal token form.
+// parseMemR0Idx — intentionally a no-op; all @(r0,rN)/@(r0,gbr) forms are
+// handled by parseOperand so this custom parser never consumes tokens.
 ParseStatus SHAsmParser::parseMemR0Idx(OperandVector &Operands) {
-  if (Parser.getTok().isNot(AsmToken::At))
-    return ParseStatus::NoMatch;
-  // Peek: next must be '('
-  const AsmToken &Next = Parser.getLexer().peekTok();
-  if (Next.isNot(AsmToken::LParen))
-    return ParseStatus::NoMatch;
-  SMLoc S = Parser.getTok().getLoc();
-  Parser.Lex(); // eat '@'
-  Parser.Lex(); // eat '('
-  // Expect 'r0'
-  if (Parser.getTok().isNot(AsmToken::Identifier) ||
-      Parser.getTok().getString().lower() != "r0")
-    return ParseStatus::NoMatch;
-  Parser.Lex(); // eat 'r0'
-  if (Parser.getTok().isNot(AsmToken::Comma))
-    return ParseStatus::NoMatch;
-  Parser.Lex(); // eat ','
-  // Expect a GPR. We have already consumed "@(r0," so this is a committed
-  // parse — a missing register is a hard error (returning NoMatch here would
-  // leave the lexer mid-operand). The @(r0,gbr) fixed form never routes here
-  // (gbr is not a GPR operand class).
-  MCRegister Reg;
-  SMLoc RS, RE;
-  if (!tryParseRegister(Reg, RS, RE).isSuccess())
-    return Error(Parser.getTok().getLoc(), "expected register in @(r0,rN)"),
-           ParseStatus::Failure;
-  if (Parser.getTok().isNot(AsmToken::RParen))
-    return Error(Parser.getTok().getLoc(), "expected ')' in @(r0,rN)"),
-           ParseStatus::Failure;
-  Parser.Lex(); // eat ')'
-  Operands.push_back(SHOperand::createMemR0Idx(Reg, S, RE));
-  return ParseStatus::Success;
+  return ParseStatus::NoMatch;
 }
 
 bool SHAsmParser::parseOperand(OperandVector &Operands, StringRef Mnemonic) {
@@ -284,32 +260,91 @@ bool SHAsmParser::parseOperand(OperandVector &Operands, StringRef Mnemonic) {
     // Determine what follows '@':
     const AsmToken &Next = Parser.getLexer().peekTok();
 
-    // Check for @(r0,...) — either @(r0,gbr) fixed form or @(r0,rN) custom.
-    // The custom @(r0,rN) case is handled by parseMemR0Idx via MatchOperandParserImpl
-    // BEFORE parseOperand is called, so we only reach here for @(r0,gbr).
-    // The matcher expects two literal tokens: "@(r0" and "gbr)".
+    // @(...)  forms: @(r0,gbr), @(r0,rN), @(disp,gbr), @(disp,pc), @(disp,rN).
     if (Next.is(AsmToken::LParen)) {
       SMLoc AtLoc = Parser.getTok().getLoc();
       Parser.Lex(); // eat '@'
       Parser.Lex(); // eat '('
+
+      // ── @(r0,...) ────────────────────────────────────────────────────────
       if (Parser.getTok().is(AsmToken::Identifier) &&
           Parser.getTok().getString().lower() == "r0") {
-        SMLoc R0Loc = Parser.getTok().getLoc();
         Parser.Lex(); // eat 'r0'
-        if (Parser.getTok().is(AsmToken::Comma)) {
-          Parser.Lex(); // eat ','
-          if (Parser.getTok().is(AsmToken::Identifier) &&
-              Parser.getTok().getString().lower() == "gbr") {
-            SMLoc GbrLoc = Parser.getTok().getLoc();
+        if (Parser.getTok().isNot(AsmToken::Comma))
+          return Error(Parser.getTok().getLoc(), "expected ',' after r0 in @(r0,...)");
+        Parser.Lex(); // eat ','
+        if (Parser.getTok().is(AsmToken::Identifier)) {
+          StringRef BaseStr = Parser.getTok().getString().lower();
+          SMLoc BaseLoc = Parser.getTok().getLoc();
+          if (BaseStr == "gbr") {
             Parser.Lex(); // eat 'gbr'
-            if (Parser.getTok().is(AsmToken::RParen)) {
-              Parser.Lex(); // eat ')'
-              // Matcher expects two tokens: "@(r0" and "gbr)"
-              Operands.push_back(SHOperand::createToken("@(r0", AtLoc));
-              Operands.push_back(SHOperand::createToken("gbr)", GbrLoc));
-              return false;
-            }
+            if (Parser.getTok().isNot(AsmToken::RParen))
+              return Error(Parser.getTok().getLoc(), "expected ')' in @(r0,gbr)");
+            Parser.Lex(); // eat ')'
+            Operands.push_back(SHOperand::createToken("@(r0", AtLoc));
+            Operands.push_back(SHOperand::createToken("gbr)", BaseLoc));
+            return false;
           }
+          // @(r0,rN) — MemR0Idx operand
+          MCRegister Reg;
+          SMLoc RS, RE;
+          if (tryParseRegister(Reg, RS, RE).isSuccess()) {
+            if (Parser.getTok().isNot(AsmToken::RParen))
+              return Error(Parser.getTok().getLoc(), "expected ')' in @(r0,rN)");
+            Parser.Lex(); // eat ')'
+            Operands.push_back(SHOperand::createMemR0Idx(Reg, AtLoc, RE));
+            return false;
+          }
+        }
+        return Error(Parser.getTok().getLoc(), "unrecognized @(r0,...) form");
+      }
+
+      // ── @(disp,...) ──────────────────────────────────────────────────────
+      // Parse the displacement as an expression (byte offset written by user).
+      const MCExpr *DispExpr;
+      SMLoc DispS = Parser.getTok().getLoc();
+      if (Parser.parseExpression(DispExpr))
+        return Error(DispS, "expected displacement in @(disp,...)");
+      if (Parser.getTok().isNot(AsmToken::Comma))
+        return Error(Parser.getTok().getLoc(), "expected ',' after displacement");
+      Parser.Lex(); // eat ','
+
+      if (Parser.getTok().is(AsmToken::Identifier)) {
+        StringRef BaseName = Parser.getTok().getString().lower();
+        SMLoc BaseLoc = Parser.getTok().getLoc();
+        if (BaseName == "gbr") {
+          Parser.Lex(); // eat 'gbr'
+          if (Parser.getTok().isNot(AsmToken::RParen))
+            return Error(Parser.getTok().getLoc(), "expected ')' in @(disp,gbr)");
+          Parser.Lex(); // eat ')'
+          Operands.push_back(SHOperand::createToken("@(", AtLoc));
+          Operands.push_back(SHOperand::createImm(DispExpr, DispS, BaseLoc));
+          Operands.push_back(SHOperand::createToken("gbr)", BaseLoc));
+          return false;
+        }
+        if (BaseName == "pc") {
+          Parser.Lex(); // eat 'pc'
+          if (Parser.getTok().isNot(AsmToken::RParen))
+            return Error(Parser.getTok().getLoc(), "expected ')' in @(disp,pc)");
+          Parser.Lex(); // eat ')'
+          Operands.push_back(SHOperand::createToken("@(", AtLoc));
+          Operands.push_back(SHOperand::createImm(DispExpr, DispS, BaseLoc));
+          Operands.push_back(SHOperand::createToken("pc)", BaseLoc));
+          return false;
+        }
+        // @(disp,rN)
+        MCRegister Reg;
+        SMLoc RS, RE;
+        if (tryParseRegister(Reg, RS, RE).isSuccess()) {
+          if (Parser.getTok().isNot(AsmToken::RParen))
+            return Error(Parser.getTok().getLoc(), "expected ')' after @(disp,rN)");
+          SMLoc RParenLoc = Parser.getTok().getLoc();
+          Parser.Lex(); // eat ')'
+          Operands.push_back(SHOperand::createToken("@(", AtLoc));
+          Operands.push_back(SHOperand::createImm(DispExpr, DispS, RS));
+          Operands.push_back(SHOperand::createReg(Reg, RS, RE));
+          Operands.push_back(SHOperand::createToken(")", RParenLoc));
+          return false;
         }
       }
       return Error(AtLoc, "unrecognized @(...) memory form");

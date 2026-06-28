@@ -45,6 +45,23 @@ public:
   unsigned getMachineOpValue(const MCInst &MI, const MCOperand &MO,
                              SmallVectorImpl<MCFixup> &Fixups,
                              const MCSubtargetInfo &STI) const;
+
+  // Scaled displacement encoders: encode byte-offset / scale.
+  unsigned getDisp_s1(const MCInst &MI, unsigned OpNo,
+                      SmallVectorImpl<MCFixup> &Fixups,
+                      const MCSubtargetInfo &STI) const {
+    return static_cast<unsigned>(MI.getOperand(OpNo).getImm()) / 1;
+  }
+  unsigned getDisp_s2(const MCInst &MI, unsigned OpNo,
+                      SmallVectorImpl<MCFixup> &Fixups,
+                      const MCSubtargetInfo &STI) const {
+    return static_cast<unsigned>(MI.getOperand(OpNo).getImm()) / 2;
+  }
+  unsigned getDisp_s4(const MCInst &MI, unsigned OpNo,
+                      SmallVectorImpl<MCFixup> &Fixups,
+                      const MCSubtargetInfo &STI) const {
+    return static_cast<unsigned>(MI.getOperand(OpNo).getImm()) / 4;
+  }
 };
 
 } // end anonymous namespace

@@ -74,6 +74,22 @@ static DecodeStatus decodeGPRAsMem(MCInst &Inst, unsigned RegNo,
   return DecodeGPRRegisterClass(Inst, RegNo, Address, Decoder);
 }
 
+static DecodeStatus decodeDisp_s1(MCInst &Inst, unsigned Val, uint64_t Address,
+                                  const MCDisassembler *Dec) {
+  Inst.addOperand(MCOperand::createImm(Val * 1));
+  return MCDisassembler::Success;
+}
+static DecodeStatus decodeDisp_s2(MCInst &Inst, unsigned Val, uint64_t Address,
+                                  const MCDisassembler *Dec) {
+  Inst.addOperand(MCOperand::createImm(Val * 2));
+  return MCDisassembler::Success;
+}
+static DecodeStatus decodeDisp_s4(MCInst &Inst, unsigned Val, uint64_t Address,
+                                  const MCDisassembler *Dec) {
+  Inst.addOperand(MCOperand::createImm(Val * 4));
+  return MCDisassembler::Success;
+}
+
 #include "SHGenDisassemblerTables.inc"
 
 DecodeStatus SHDisassembler::getInstruction(MCInst &Instr, uint64_t &Size,

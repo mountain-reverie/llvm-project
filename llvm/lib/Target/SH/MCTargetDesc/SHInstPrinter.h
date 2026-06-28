@@ -38,6 +38,7 @@ public:
   // Custom print methods for memory operands.
   void printMemDec(const MCInst *MI, int OpNo, raw_ostream &O);
   void printMemR0Idx(const MCInst *MI, int OpNo, raw_ostream &O);
+  void printDisp(const MCInst *MI, int OpNo, raw_ostream &O);
 };
 
 } // end namespace llvm

@@ -56,3 +56,31 @@ def MemR0Idx : RegisterOperand<GPR> {
   let PrintMethod = "printMemR0Idx";
   let DecoderMethod = "decodeGPRAsMem";
 }
+
+// Scaled displacement operand. The AsmParser stores the BYTE offset;
+// the encoder divides by the scale factor, the decoder multiplies back.
+def DispAsmOperand : AsmOperandClass {
+  let Name = "Disp";
+  let RenderMethod = "addImmOperands";
+  let DiagnosticType = "InvalidDisp";
+}
+
+class SHDispOperand<string scale> : Operand<i32> {
+  let ParserMatchClass = DispAsmOperand;
+  let PrintMethod = "printDisp";
+  let EncoderMethod = "getDisp_s"#scale;
+  let DecoderMethod = "decodeDisp_s"#scale;
+}
+
+// 4-bit displacement fields, scaled by access size.
+def memdisp_b4 : SHDispOperand<"1">;
+def memdisp_w4 : SHDispOperand<"2">;
+def memdisp_l4 : SHDispOperand<"4">;
+// 8-bit displacement fields for GBR-relative addressing.
+def gbrdisp_b8 : SHDispOperand<"1">;
+def gbrdisp_w8 : SHDispOperand<"2">;
+def gbrdisp_l8 : SHDispOperand<"4">;
+// 8-bit displacement fields for PC-relative addressing.
+def pcdisp_w8  : SHDispOperand<"2">;
+def pcdisp_l8  : SHDispOperand<"4">;
+

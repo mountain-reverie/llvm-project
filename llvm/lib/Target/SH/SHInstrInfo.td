@@ -40,6 +40,65 @@ def MOV_Imm_GPR : Instruction {
   let Predicates = [HasSH1];
 }
 
+def MOVA_MemPC_R0Fixed : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<8> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 1;
+  let Inst{9} = 1;
+  let Inst{8} = 1;
+  let Inst{7-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins pcdisp_l8:$disp);
+  let AsmString = "mova\t@(${disp}, pc), r0";
+  let Predicates = [HasSH1];
+}
+
+def MOV_W_MemPC_GPR : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<8> disp;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 1;
+  let Inst{7-0} = disp;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins pcdisp_w8:$disp, GPR:$rn);
+  let AsmString = "mov.w\t@(${disp}, pc), ${rn}";
+  let Predicates = [HasSH1];
+}
+
+def MOV_L_MemPC_GPR : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<8> disp;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 1;
+  let Inst{7-0} = disp;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins pcdisp_l8:$disp, GPR:$rn);
+  let AsmString = "mov.l\t@(${disp}, pc), ${rn}";
+  let Predicates = [HasSH1];
+}
+
 def MOV_B_MemReg_GPR : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
@@ -466,6 +525,140 @@ def MOV_L_R0Fixed_MemPostInc : Instruction {
   let Predicates = [HasSH2A];
 }
 
+def MOV_B_MemDisp_R0Fixed : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 1;
+  let Inst{9} = 0;
+  let Inst{8} = 0;
+  let Inst{7-4} = rm;
+  let Inst{3-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, memdisp_b4:$disp);
+  let AsmString = "mov.b\t@(${disp}, ${rm}), r0";
+  let Predicates = [HasSH1];
+}
+
+def MOV_W_MemDisp_R0Fixed : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 1;
+  let Inst{9} = 0;
+  let Inst{8} = 1;
+  let Inst{7-4} = rm;
+  let Inst{3-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, memdisp_w4:$disp);
+  let AsmString = "mov.w\t@(${disp}, ${rm}), r0";
+  let Predicates = [HasSH1];
+}
+
+def MOV_L_MemDisp_GPR : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> disp;
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 1;
+  let Inst{7-4} = rm;
+  let Inst{3-0} = disp;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, memdisp_l4:$disp, GPR:$rn);
+  let AsmString = "mov.l\t@(${disp}, ${rm}), ${rn}";
+  let Predicates = [HasSH1];
+}
+
+def MOV_B_R0Fixed_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  bits<4> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 0;
+  let Inst{7-4} = rn;
+  let Inst{3-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn, memdisp_b4:$disp);
+  let AsmString = "mov.b\tr0, @(${disp}, ${rn})";
+  let Predicates = [HasSH1];
+}
+
+def MOV_W_R0Fixed_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  bits<4> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 1;
+  let Inst{7-4} = rn;
+  let Inst{3-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn, memdisp_w4:$disp);
+  let AsmString = "mov.w\tr0, @(${disp}, ${rn})";
+  let Predicates = [HasSH1];
+}
+
+def MOV_L_GPR_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  bits<4> disp;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 1;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  let Inst{3-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, GPR:$rn, memdisp_l4:$disp);
+  let AsmString = "mov.l\t${rm}, @(${disp}, ${rn})";
+  let Predicates = [HasSH1];
+}
+
 def MOV_B_MemR0_GPR : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
@@ -601,6 +794,132 @@ def MOV_L_GPR_MemR0 : Instruction {
   dag OutOperandList = (outs);
   dag InOperandList = (ins GPR:$rm, MemR0Idx:$rn);
   let AsmString = "mov.l\t${rm}, ${rn}";
+  let Predicates = [HasSH1];
+}
+
+def MOV_B_MemGBR_R0Fixed : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<8> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 1;
+  let Inst{9} = 0;
+  let Inst{8} = 0;
+  let Inst{7-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins gbrdisp_b8:$disp);
+  let AsmString = "mov.b\t@(${disp}, gbr), r0";
+  let Predicates = [HasSH1];
+}
+
+def MOV_W_MemGBR_R0Fixed : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<8> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 1;
+  let Inst{9} = 0;
+  let Inst{8} = 1;
+  let Inst{7-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins gbrdisp_w8:$disp);
+  let AsmString = "mov.w\t@(${disp}, gbr), r0";
+  let Predicates = [HasSH1];
+}
+
+def MOV_L_MemGBR_R0Fixed : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<8> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 1;
+  let Inst{9} = 1;
+  let Inst{8} = 0;
+  let Inst{7-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins gbrdisp_l8:$disp);
+  let AsmString = "mov.l\t@(${disp}, gbr), r0";
+  let Predicates = [HasSH1];
+}
+
+def MOV_B_R0Fixed_MemGBR : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<8> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 0;
+  let Inst{7-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins gbrdisp_b8:$disp);
+  let AsmString = "mov.b\tr0, @(${disp}, gbr)";
+  let Predicates = [HasSH1];
+}
+
+def MOV_W_R0Fixed_MemGBR : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<8> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 1;
+  let Inst{7-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins gbrdisp_w8:$disp);
+  let AsmString = "mov.w\tr0, @(${disp}, gbr)";
+  let Predicates = [HasSH1];
+}
+
+def MOV_L_R0Fixed_MemGBR : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<8> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 1;
+  let Inst{8} = 0;
+  let Inst{7-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins gbrdisp_l8:$disp);
+  let AsmString = "mov.l\tr0, @(${disp}, gbr)";
   let Predicates = [HasSH1];
 }
 
