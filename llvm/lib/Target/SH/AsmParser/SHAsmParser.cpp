@@ -311,83 +311,39 @@ bool SHAsmParser::parseOperand(OperandVector &Operands, StringRef Mnemonic) {
       return Error(AtLoc, "unrecognized @(...) memory form");
     }
 
-    // Check for @-r15 or @-rN (the latter handled by parseMemDec via custom parser)
+    // @-rN pre-decrement. The variable form is normally handled by parseMemDec
+    // (custom parser invoked before this fallback); reaching here we build a
+    // MemDec operand directly. (Fixed @-R15 for movml/movmu is deferred to a
+    // later sub-phase — "@-r15" is ambiguous with variable @-Rn at rn=15.)
     if (Next.is(AsmToken::Minus)) {
       SMLoc AtLoc = Parser.getTok().getLoc();
       Parser.Lex(); // eat '@'
       Parser.Lex(); // eat '-'
-      // Check for r15 (fixed token) vs general register (custom operand already handled)
-      if (Parser.getTok().is(AsmToken::Identifier)) {
-        StringRef RegName = Parser.getTok().getString();
-        if (RegName.lower() == "r15") {
-          Parser.Lex(); // eat 'r15'
-          Operands.push_back(SHOperand::createToken("@-r15", AtLoc));
-          return false;
-        }
-        // General @-rN: reconstruct as register operand
-        MCRegister Reg = matchRegisterByName(RegName);
-        if (Reg.isValid()) {
-          SMLoc RS = Parser.getTok().getLoc();
-          SMLoc RE = Parser.getTok().getEndLoc();
-          Parser.Lex();
-          Operands.push_back(SHOperand::createReg(Reg, RS, RE));
-          return false;
-        }
+      MCRegister Reg;
+      SMLoc RS, RE;
+      if (tryParseRegister(Reg, RS, RE).isSuccess()) {
+        Operands.push_back(SHOperand::createMemDec(Reg, AtLoc, RE));
+        return false;
       }
       return Error(Parser.getTok().getLoc(), "expected register after '@-'");
     }
 
-    // @rN or @rN+
+    // @rN or @rN+ (variable indirect / post-increment): approach-A literal '@'
+    // token + register operand (+ '+'). No fixed-register special-casing — the
+    // fixed forms @R0/@R15+ are deferred (textually identical to @Rm/@Rm+ at
+    // base r0/r15, which the literal-text scheme cannot disambiguate).
     SMLoc AtLoc = Parser.getTok().getLoc();
     Parser.Lex(); // eat '@'
-    if (Parser.getTok().is(AsmToken::Identifier)) {
-      StringRef RegName = Parser.getTok().getString();
-      // Check @r15+ (fixed token for movml pop)
-      if (RegName.lower() == "r15") {
-        SMLoc RS = Parser.getTok().getLoc();
-        Parser.Lex(); // eat 'r15'
-        if (Parser.getTok().is(AsmToken::Plus)) {
-          Parser.Lex(); // eat '+'
-          Operands.push_back(SHOperand::createToken("@r15+", AtLoc));
-          return false;
-        }
-        // @r15 without '+': a register operand
-        Operands.push_back(SHOperand::createToken("@", AtLoc));
-        MCRegister Reg = matchRegisterByName("r15");
-        Operands.push_back(SHOperand::createReg(Reg, RS, RS));
-        return false;
-      }
-      // @r0 (fixed token for cas.l)
-      if (RegName.lower() == "r0") {
-        SMLoc RS = Parser.getTok().getLoc();
-        Parser.Lex(); // eat 'r0'
-        if (Parser.getTok().is(AsmToken::Plus)) {
-          // @r0+  — post-increment form (generic)
-          Parser.Lex();
-          Operands.push_back(SHOperand::createToken("@", AtLoc));
-          MCRegister Reg = matchRegisterByName("r0");
-          Operands.push_back(SHOperand::createReg(Reg, RS, RS));
-          Operands.push_back(SHOperand::createToken("+", RS));
-          return false;
-        }
-        // Bare @r0
-        Operands.push_back(SHOperand::createToken("@r0", AtLoc));
-        return false;
-      }
-      // Generic @rN or @rN+
-      MCRegister Reg = matchRegisterByName(RegName);
-      if (Reg.isValid()) {
-        SMLoc RS = Parser.getTok().getLoc();
-        SMLoc RE = Parser.getTok().getEndLoc();
+    MCRegister Reg;
+    SMLoc RS, RE;
+    if (tryParseRegister(Reg, RS, RE).isSuccess()) {
+      Operands.push_back(SHOperand::createToken("@", AtLoc));
+      Operands.push_back(SHOperand::createReg(Reg, RS, RE));
+      if (Parser.getTok().is(AsmToken::Plus)) {
+        Operands.push_back(SHOperand::createToken("+", Parser.getTok().getLoc()));
         Parser.Lex();
-        Operands.push_back(SHOperand::createToken("@", AtLoc));
-        Operands.push_back(SHOperand::createReg(Reg, RS, RE));
-        if (Parser.getTok().is(AsmToken::Plus)) {
-          Operands.push_back(SHOperand::createToken("+", Parser.getTok().getLoc()));
-          Parser.Lex();
-        }
-        return false;
       }
+      return false;
     }
     return Error(Parser.getTok().getLoc(), "expected register after '@'");
   }
