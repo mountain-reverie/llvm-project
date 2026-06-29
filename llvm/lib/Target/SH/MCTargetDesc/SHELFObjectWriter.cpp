@@ -31,6 +31,10 @@ protected:
                         bool IsPCRel) const override {
     // Relocation type values from binutils include/elf/sh.h.
     switch (Fixup.getKind()) {
+    case MCFixupKind(SH::fixup_sh_pcrel8_branch):
+      return 3; // R_SH_DIR8WPN: PC-relative 8-bit branch, byte/2
+    case MCFixupKind(SH::fixup_sh_pcrel12_branch):
+      return 4; // R_SH_IND12W: PC-relative 12-bit branch, byte/2
     case MCFixupKind(SH::fixup_sh_pcrel8_w):
       return 6; // R_SH_DIR8WPZ: PC-relative, byte/2, zero-extended
     case MCFixupKind(SH::fixup_sh_pcrel8_l):
