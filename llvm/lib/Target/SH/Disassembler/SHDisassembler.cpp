@@ -91,7 +91,7 @@ static DecodeStatus decodeMovMemDecR15(MCInst &Inst, unsigned Insn,
                                        const MCDisassembler *Decoder) {
   // movml.l/movmu.l Rm,@-R15 : 0100 mmmm 1111 000x ; operands (rm, @-r15)
   DecodeGPRRegisterClass(Inst, (Insn >> 8) & 0xF, Address, Decoder); // rm
-  Inst.addOperand(MCOperand::createImm(0));                          // @-r15
+  Inst.addOperand(MCOperand::createReg(SH::R15));                    // @-r15
   return MCDisassembler::Success;
 }
 static DecodeStatus decodeMovMemIncR15(MCInst &Inst, unsigned Insn,
