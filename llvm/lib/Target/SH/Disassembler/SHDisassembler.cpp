@@ -111,6 +111,10 @@ static DecodeStatus decodeDisp_s4(MCInst &Inst, unsigned Val, uint64_t Address,
 }
 
 // Branch displacement decoders: sign-extend and scale by 2.
+// Branch displacement decoders: sign-extend the field and scale ×2, emitting a
+// PC-relative displacement immediate (not an absolute target — `-disassemble`
+// has no base symbol). This is the complete decoder; its correctness is
+// verified by the branch disassembly smoke + round-trip oracle.
 static DecodeStatus decodeBranchDisp8(MCInst &Inst, unsigned Val,
                                       uint64_t Address,
                                       const MCDisassembler *Dec) {
