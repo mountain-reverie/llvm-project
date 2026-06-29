@@ -40,6 +40,54 @@ def MOV_Imm_GPR : Instruction {
   let Predicates = [HasSH1];
 }
 
+def MOVI20_Imm_GPR : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<20> imm;
+  bits<4> rn;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 0;
+  let Inst{28} = 0;
+  let Inst{19} = 0;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 0;
+  let Inst{23-20} = imm{19-16};
+  let Inst{15-0} = imm{15-0};
+  let Inst{27-24} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins SHImm:$imm, GPR:$rn);
+  let AsmString = "movi20\t${imm}, ${rn}";
+  let Predicates = [HasSH2A];
+}
+
+def MOVI20S_Imm_GPR : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<20> imm;
+  bits<4> rn;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 0;
+  let Inst{28} = 0;
+  let Inst{19} = 0;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{23-20} = imm{19-16};
+  let Inst{15-0} = imm{15-0};
+  let Inst{27-24} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins SHImm:$imm, GPR:$rn);
+  let AsmString = "movi20s\t${imm}, ${rn}";
+  let Predicates = [HasSH2A];
+}
+
 def MOVA_MemPC_R0Fixed : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
@@ -548,6 +596,64 @@ def MOV_B_MemDisp_R0Fixed : Instruction {
   let Predicates = [HasSH1];
 }
 
+def MOV_B_MemDisp_GPR : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<12> disp;
+  bits<4> rn;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{19} = 0;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{23-20} = rm;
+  let Inst{11-0} = disp;
+  let Inst{27-24} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, memdisp_b12:$disp, GPR:$rn);
+  let AsmString = "mov.b\t@(${disp}, ${rm}), ${rn}";
+  let Predicates = [HasSH2A];
+}
+
+def MOVU_B_MemDisp_GPR : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<12> disp;
+  bits<4> rn;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{19} = 0;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 1;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{23-20} = rm;
+  let Inst{11-0} = disp;
+  let Inst{27-24} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, memdisp_b12:$disp, GPR:$rn);
+  let AsmString = "movu.b\t@(${disp}, ${rm}), ${rn}";
+  let Predicates = [HasSH2A];
+}
+
 def MOV_W_MemDisp_R0Fixed : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
@@ -571,6 +677,64 @@ def MOV_W_MemDisp_R0Fixed : Instruction {
   let Predicates = [HasSH1];
 }
 
+def MOV_W_MemDisp_GPR : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<12> disp;
+  bits<4> rn;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{19} = 0;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 1;
+  let Inst{23-20} = rm;
+  let Inst{11-0} = disp;
+  let Inst{27-24} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, memdisp_w12:$disp, GPR:$rn);
+  let AsmString = "mov.w\t@(${disp}, ${rm}), ${rn}";
+  let Predicates = [HasSH2A];
+}
+
+def MOVU_W_MemDisp_GPR : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<12> disp;
+  bits<4> rn;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{19} = 0;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 1;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 1;
+  let Inst{23-20} = rm;
+  let Inst{11-0} = disp;
+  let Inst{27-24} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, memdisp_w12:$disp, GPR:$rn);
+  let AsmString = "movu.w\t@(${disp}, ${rm}), ${rn}";
+  let Predicates = [HasSH2A];
+}
+
 def MOV_L_MemDisp_GPR : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
@@ -590,6 +754,35 @@ def MOV_L_MemDisp_GPR : Instruction {
   dag InOperandList = (ins GPR:$rm, memdisp_l4:$disp, GPR:$rn);
   let AsmString = "mov.l\t@(${disp}, ${rm}), ${rn}";
   let Predicates = [HasSH1];
+}
+
+def MOV_L_MemDisp_GPR_2 : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<12> disp;
+  bits<4> rn;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{19} = 0;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 0;
+  let Inst{23-20} = rm;
+  let Inst{11-0} = disp;
+  let Inst{27-24} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, memdisp_l12:$disp, GPR:$rn);
+  let AsmString = "mov.l\t@(${disp}, ${rm}), ${rn}";
+  let Predicates = [HasSH2A];
 }
 
 def MOV_B_R0Fixed_MemDisp : Instruction {
@@ -615,6 +808,35 @@ def MOV_B_R0Fixed_MemDisp : Instruction {
   let Predicates = [HasSH1];
 }
 
+def MOV_B_GPR_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  bits<12> disp;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{19} = 0;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{23-20} = rm;
+  let Inst{27-24} = rn;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, GPR:$rn, memdisp_b12:$disp);
+  let AsmString = "mov.b\t${rm}, @(${disp}, ${rn})";
+  let Predicates = [HasSH2A];
+}
+
 def MOV_W_R0Fixed_MemDisp : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
@@ -638,6 +860,35 @@ def MOV_W_R0Fixed_MemDisp : Instruction {
   let Predicates = [HasSH1];
 }
 
+def MOV_W_GPR_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  bits<12> disp;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{19} = 0;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 1;
+  let Inst{23-20} = rm;
+  let Inst{27-24} = rn;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, GPR:$rn, memdisp_w12:$disp);
+  let AsmString = "mov.w\t${rm}, @(${disp}, ${rn})";
+  let Predicates = [HasSH2A];
+}
+
 def MOV_L_GPR_MemDisp : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
@@ -657,6 +908,35 @@ def MOV_L_GPR_MemDisp : Instruction {
   dag InOperandList = (ins GPR:$rm, GPR:$rn, memdisp_l4:$disp);
   let AsmString = "mov.l\t${rm}, @(${disp}, ${rn})";
   let Predicates = [HasSH1];
+}
+
+def MOV_L_GPR_MemDisp_2 : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  bits<12> disp;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{19} = 0;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 1;
+  let Inst{12} = 0;
+  let Inst{23-20} = rm;
+  let Inst{27-24} = rn;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, GPR:$rn, memdisp_l12:$disp);
+  let AsmString = "mov.l\t${rm}, @(${disp}, ${rn})";
+  let Predicates = [HasSH2A];
 }
 
 def MOV_B_MemR0_GPR : Instruction {
@@ -1027,8 +1307,8 @@ def MOVML_L_GPR_MemPreDec : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
   let Size = 2;
-  let isAsmParserOnly = 1;
   let DecoderNamespace = "SH";
+  let isAsmParserOnly = 1;
   bits<4> rm;
   let Inst{15} = 0;
   let Inst{14} = 1;
@@ -1053,8 +1333,8 @@ def MOVML_L_MemPostInc_GPR : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
   let Size = 2;
-  let isAsmParserOnly = 1;
   let DecoderNamespace = "SH";
+  let isAsmParserOnly = 1;
   bits<4> rn;
   let Inst{15} = 0;
   let Inst{14} = 1;
@@ -1079,8 +1359,8 @@ def MOVMU_L_GPR_MemPreDec : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
   let Size = 2;
-  let isAsmParserOnly = 1;
   let DecoderNamespace = "SH";
+  let isAsmParserOnly = 1;
   bits<4> rm;
   let Inst{15} = 0;
   let Inst{14} = 1;
@@ -1105,8 +1385,8 @@ def MOVMU_L_MemPostInc_GPR : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
   let Size = 2;
-  let isAsmParserOnly = 1;
   let DecoderNamespace = "SH";
+  let isAsmParserOnly = 1;
   bits<4> rn;
   let Inst{15} = 0;
   let Inst{14} = 1;
@@ -1131,8 +1411,8 @@ def CAS_L_GPR_GPR_MemReg : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
   let Size = 2;
-  let isAsmParserOnly = 1;
   let DecoderNamespace = "SH";
+  let isAsmParserOnly = 1;
   bits<4> rm;
   bits<4> rn;
   let Inst{15} = 0;
@@ -1297,6 +1577,96 @@ def XTRACT_GPR_GPR : Instruction {
   let Predicates = [HasSH1];
 }
 
+def BAND_B_Imm_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<3> imm;
+  bits<4> rn;
+  bits<12> disp;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{23} = 0;
+  let Inst{19} = 1;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{22-20} = imm;
+  let Inst{27-24} = rn;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  let AsmString = "band.b\t${imm}, @(${disp}, ${rn})";
+  let Predicates = [HasSH2A];
+}
+
+def BANDNOT_B_Imm_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<3> imm;
+  bits<4> rn;
+  bits<12> disp;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{23} = 0;
+  let Inst{19} = 1;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{22-20} = imm;
+  let Inst{27-24} = rn;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  let AsmString = "bandnot.b\t${imm}, @(${disp}, ${rn})";
+  let Predicates = [HasSH2A];
+}
+
+def BCLR_B_Imm_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<3> imm;
+  bits<4> rn;
+  bits<12> disp;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{23} = 0;
+  let Inst{19} = 1;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{22-20} = imm;
+  let Inst{27-24} = rn;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  let AsmString = "bclr.b\t${imm}, @(${disp}, ${rn})";
+  let Predicates = [HasSH2A];
+}
+
 def BCLR_Imm_GPR : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
@@ -1318,6 +1688,36 @@ def BCLR_Imm_GPR : Instruction {
   dag OutOperandList = (outs);
   dag InOperandList = (ins SHImm:$imm, GPR:$rn);
   let AsmString = "bclr\t${imm}, ${rn}";
+  let Predicates = [HasSH2A];
+}
+
+def BLD_B_Imm_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<3> imm;
+  bits<4> rn;
+  bits<12> disp;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{23} = 0;
+  let Inst{19} = 1;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{22-20} = imm;
+  let Inst{27-24} = rn;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  let AsmString = "bld.b\t${imm}, @(${disp}, ${rn})";
   let Predicates = [HasSH2A];
 }
 
@@ -1345,6 +1745,126 @@ def BLD_Imm_GPR : Instruction {
   let Predicates = [HasSH2A];
 }
 
+def BLDNOT_B_Imm_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<3> imm;
+  bits<4> rn;
+  bits<12> disp;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{23} = 0;
+  let Inst{19} = 1;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 1;
+  let Inst{14} = 0;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{22-20} = imm;
+  let Inst{27-24} = rn;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  let AsmString = "bldnot.b\t${imm}, @(${disp}, ${rn})";
+  let Predicates = [HasSH2A];
+}
+
+def BOR_B_Imm_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<3> imm;
+  bits<4> rn;
+  bits<12> disp;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{23} = 0;
+  let Inst{19} = 1;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 1;
+  let Inst{22-20} = imm;
+  let Inst{27-24} = rn;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  let AsmString = "bor.b\t${imm}, @(${disp}, ${rn})";
+  let Predicates = [HasSH2A];
+}
+
+def BORNOT_B_Imm_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<3> imm;
+  bits<4> rn;
+  bits<12> disp;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{23} = 0;
+  let Inst{19} = 1;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 1;
+  let Inst{22-20} = imm;
+  let Inst{27-24} = rn;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  let AsmString = "bornot.b\t${imm}, @(${disp}, ${rn})";
+  let Predicates = [HasSH2A];
+}
+
+def BSET_B_Imm_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<3> imm;
+  bits<4> rn;
+  bits<12> disp;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{23} = 0;
+  let Inst{19} = 1;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 1;
+  let Inst{22-20} = imm;
+  let Inst{27-24} = rn;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  let AsmString = "bset.b\t${imm}, @(${disp}, ${rn})";
+  let Predicates = [HasSH2A];
+}
+
 def BSET_Imm_GPR : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
@@ -1369,6 +1889,36 @@ def BSET_Imm_GPR : Instruction {
   let Predicates = [HasSH2A];
 }
 
+def BST_B_Imm_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<3> imm;
+  bits<4> rn;
+  bits<12> disp;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{23} = 0;
+  let Inst{19} = 1;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 1;
+  let Inst{12} = 0;
+  let Inst{22-20} = imm;
+  let Inst{27-24} = rn;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  let AsmString = "bst.b\t${imm}, @(${disp}, ${rn})";
+  let Predicates = [HasSH2A];
+}
+
 def BST_Imm_GPR : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
@@ -1390,6 +1940,36 @@ def BST_Imm_GPR : Instruction {
   dag OutOperandList = (outs);
   dag InOperandList = (ins SHImm:$imm, GPR:$rn);
   let AsmString = "bst\t${imm}, ${rn}";
+  let Predicates = [HasSH2A];
+}
+
+def BXOR_B_Imm_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<3> imm;
+  bits<4> rn;
+  bits<12> disp;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{23} = 0;
+  let Inst{19} = 1;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 0;
+  let Inst{22-20} = imm;
+  let Inst{27-24} = rn;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  let AsmString = "bxor.b\t${imm}, @(${disp}, ${rn})";
   let Predicates = [HasSH2A];
 }
 

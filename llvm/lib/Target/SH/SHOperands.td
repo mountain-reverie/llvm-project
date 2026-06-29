@@ -112,6 +112,9 @@ def Gbrdisp_w8AsmOperand : SHDispAsmOperand<"Gbrdisp_w8", "isGbrdisp_w8">;
 def Gbrdisp_l8AsmOperand : SHDispAsmOperand<"Gbrdisp_l8", "isGbrdisp_l8">;
 def Pcdisp_w8AsmOperand  : SHDispAsmOperand<"Pcdisp_w8",  "isPcdisp_w8">;
 def Pcdisp_l8AsmOperand  : SHDispAsmOperand<"Pcdisp_l8",  "isPcdisp_l8">;
+def Memdisp_b12AsmOperand : SHDispAsmOperand<"Memdisp_b12", "isMemdisp_b12">;
+def Memdisp_w12AsmOperand : SHDispAsmOperand<"Memdisp_w12", "isMemdisp_w12">;
+def Memdisp_l12AsmOperand : SHDispAsmOperand<"Memdisp_l12", "isMemdisp_l12">;
 
 class SHDispOperand<AsmOperandClass MC, string scale> : Operand<i32> {
   let ParserMatchClass = MC;
@@ -124,6 +127,10 @@ class SHDispOperand<AsmOperandClass MC, string scale> : Operand<i32> {
 def memdisp_b4 : SHDispOperand<Memdisp_b4AsmOperand, "1">;
 def memdisp_w4 : SHDispOperand<Memdisp_w4AsmOperand, "2">;
 def memdisp_l4 : SHDispOperand<Memdisp_l4AsmOperand, "4">;
+// 12-bit displacement fields (two-word SH-2A instructions), scaled by access size.
+def memdisp_b12 : SHDispOperand<Memdisp_b12AsmOperand, "1">;
+def memdisp_w12 : SHDispOperand<Memdisp_w12AsmOperand, "2">;
+def memdisp_l12 : SHDispOperand<Memdisp_l12AsmOperand, "4">;
 // 8-bit displacement fields for GBR-relative addressing.
 def gbrdisp_b8 : SHDispOperand<Gbrdisp_b8AsmOperand, "1">;
 def gbrdisp_w8 : SHDispOperand<Gbrdisp_w8AsmOperand, "2">;

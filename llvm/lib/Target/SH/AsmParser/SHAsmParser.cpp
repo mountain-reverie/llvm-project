@@ -125,6 +125,30 @@ public:
     }
     return true; // non-constant expr: let fixup handle range
   }
+  bool isMemdisp_b12() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return V >= 0 && V <= 4095;
+    }
+    return false;
+  }
+  bool isMemdisp_w12() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return V % 2 == 0 && V / 2 >= 0 && V / 2 <= 4095;
+    }
+    return false;
+  }
+  bool isMemdisp_l12() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return V % 4 == 0 && V / 4 >= 0 && V / 4 <= 4095;
+    }
+    return false;
+  }
   bool isMem()        const override { return false; }
   bool isMemDec()     const { return Kind == k_MemDec; }
   bool isMemR0Idx()   const { return Kind == k_MemR0Idx; }
