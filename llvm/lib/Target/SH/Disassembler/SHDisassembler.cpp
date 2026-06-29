@@ -89,10 +89,13 @@ static DecodeStatus DecodeFRegRegisterClass(MCInst &Inst, unsigned RegNo,
   return MCDisassembler::Success;
 }
 
-// Temporary stub — Task 3 implements the real fmac decoder.
-static DecodeStatus decodeFmacFR0(MCInst &, unsigned, uint64_t,
-                                   const MCDisassembler *) {
-  return MCDisassembler::Fail;
+// fmac FR0,FRm,FRn: 1111 nnnn mmmm 1110; InOperandList=(FR0Fixed, FRm, FRn).
+static DecodeStatus decodeFmacFR0(MCInst &Inst, unsigned Insn, uint64_t Address,
+                                   const MCDisassembler *Decoder) {
+  Inst.addOperand(MCOperand::createReg(SH::FR0));                         // fr0 (FR0Fixed)
+  DecodeFRegRegisterClass(Inst, (Insn >> 4) & 0xF, Address, Decoder);    // FRm
+  DecodeFRegRegisterClass(Inst, (Insn >> 8) & 0xF, Address, Decoder);    // FRn
+  return MCDisassembler::Success;
 }
 
 static const MCPhysReg BankRegDecoderTable[8] = {

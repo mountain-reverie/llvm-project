@@ -169,6 +169,7 @@ public:
   bool isMemDec()     const { return Kind == k_MemDec; }
   bool isMemR0Idx()   const { return Kind == k_MemR0Idx; }
   bool isMemR0Fixed() const { return Kind == k_MemR0Fixed; }
+  bool isFR0() const { return Kind == k_Register && Reg.Reg == SH::FR0; }
   bool isMemDecR15()  const { return Kind == k_MemDec && Reg.Reg == SH::R15; }
   bool isMemIncR15()  const { return Kind == k_MemIncR15; }
 
@@ -203,6 +204,10 @@ public:
   void addMemR0FixedOperands(MCInst &Inst, unsigned N) const {
     assert(N == 1);
     Inst.addOperand(MCOperand::createImm(0));
+  }
+  void addFR0FixedOperands(MCInst &Inst, unsigned N) const {
+    assert(N == 1);
+    Inst.addOperand(MCOperand::createReg(SH::FR0));
   }
   void addMemIncR15Operands(MCInst &Inst, unsigned N) const {
     assert(N == 1);

@@ -65,6 +65,10 @@ void SHInstPrinter::printMemR0Fixed(const MCInst *MI, int OpNo, raw_ostream &O) 
   O << "@r0";
 }
 
+void SHInstPrinter::printFR0Fixed(const MCInst *MI, int OpNo, raw_ostream &O) {
+  O << "fr0";
+}
+
 void SHInstPrinter::printMemDecR15(const MCInst *MI, int OpNo, raw_ostream &O) {
   O << "@-r15";
 }

@@ -44,6 +44,7 @@ public:
   void printMemDec(const MCInst *MI, int OpNo, raw_ostream &O);
   void printMemR0Idx(const MCInst *MI, int OpNo, raw_ostream &O);
   void printMemR0Fixed(const MCInst *MI, int OpNo, raw_ostream &O);
+  void printFR0Fixed(const MCInst *MI, int OpNo, raw_ostream &O);
   void printMemDecR15(const MCInst *MI, int OpNo, raw_ostream &O);
   void printMemIncR15(const MCInst *MI, int OpNo, raw_ostream &O);
   void printDisp(const MCInst *MI, int OpNo, raw_ostream &O);

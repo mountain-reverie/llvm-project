@@ -81,6 +81,18 @@ def MemR0Fixed : Operand<i32> {
   let ParserMatchClass = MemR0FixedAsmOperand;
   let PrintMethod = "printMemR0Fixed";
 }
+
+// Constrained FR0 operand for fmac FR0,FRm,FRn.  The register is implicit
+// (no encoding bits); isFR0 validates the parsed operand is fr0.
+def FR0FixedAsmOperand : AsmOperandClass {
+  let Name = "FR0Fixed";
+  let RenderMethod = "addFR0FixedOperands";
+  let PredicateMethod = "isFR0";
+}
+def FR0Fixed : Operand<i32> {
+  let ParserMatchClass = FR0FixedAsmOperand;
+  let PrintMethod = "printFR0Fixed";
+}
 def MemDecR15 : Operand<i32> {
   let ParserMatchClass = MemDecR15AsmOperand;
   let PrintMethod = "printMemDecR15";

@@ -5652,8 +5652,8 @@ def FMAC_FR0Fixed_FReg_FReg : Instruction {
   let Inst{7-4} = rm;
   let Inst{11-8} = rn;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins FReg:$rm, FReg:$rn);
-  let AsmString = "fmac\tfr0, ${rm}, ${rn}";
+  dag InOperandList = (ins FR0Fixed:$fr0, FReg:$rm, FReg:$rn);
+  let AsmString = "fmac\t${fr0}, ${rm}, ${rn}";
   let Predicates = [HasSH2E];
 }
 
