@@ -1308,7 +1308,7 @@ def MOVML_L_GPR_MemPreDec : Instruction {
   bits<16> Inst;
   let Size = 2;
   let DecoderNamespace = "SH";
-  let isAsmParserOnly = 1;
+  let DecoderMethod = "decodeMovMemDecR15";
   bits<4> rm;
   let Inst{15} = 0;
   let Inst{14} = 1;
@@ -1334,7 +1334,7 @@ def MOVML_L_MemPostInc_GPR : Instruction {
   bits<16> Inst;
   let Size = 2;
   let DecoderNamespace = "SH";
-  let isAsmParserOnly = 1;
+  let DecoderMethod = "decodeMovMemIncR15";
   bits<4> rn;
   let Inst{15} = 0;
   let Inst{14} = 1;
@@ -1360,7 +1360,7 @@ def MOVMU_L_GPR_MemPreDec : Instruction {
   bits<16> Inst;
   let Size = 2;
   let DecoderNamespace = "SH";
-  let isAsmParserOnly = 1;
+  let DecoderMethod = "decodeMovMemDecR15";
   bits<4> rm;
   let Inst{15} = 0;
   let Inst{14} = 1;
@@ -1386,7 +1386,7 @@ def MOVMU_L_MemPostInc_GPR : Instruction {
   bits<16> Inst;
   let Size = 2;
   let DecoderNamespace = "SH";
-  let isAsmParserOnly = 1;
+  let DecoderMethod = "decodeMovMemIncR15";
   bits<4> rn;
   let Inst{15} = 0;
   let Inst{14} = 1;
@@ -1412,7 +1412,7 @@ def CAS_L_GPR_GPR_MemReg : Instruction {
   bits<16> Inst;
   let Size = 2;
   let DecoderNamespace = "SH";
-  let isAsmParserOnly = 1;
+  let DecoderMethod = "decodeCasFixed";
   bits<4> rm;
   bits<4> rn;
   let Inst{15} = 0;

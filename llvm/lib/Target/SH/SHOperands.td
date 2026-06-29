@@ -80,17 +80,14 @@ def MemIncR15AsmOperand : AsmOperandClass {
 def MemR0Fixed : Operand<i32> {
   let ParserMatchClass = MemR0FixedAsmOperand;
   let PrintMethod = "printMemR0Fixed";
-  let DecoderMethod = "decodeMemR0Fixed";
 }
 def MemDecR15 : Operand<i32> {
   let ParserMatchClass = MemDecR15AsmOperand;
   let PrintMethod = "printMemDecR15";
-  let DecoderMethod = "decodeMemDecR15";
 }
 def MemIncR15 : Operand<i32> {
   let ParserMatchClass = MemIncR15AsmOperand;
   let PrintMethod = "printMemIncR15";
-  let DecoderMethod = "decodeMemIncR15";
 }
 
 // Scaled displacement operands. The AsmParser stores the BYTE offset;

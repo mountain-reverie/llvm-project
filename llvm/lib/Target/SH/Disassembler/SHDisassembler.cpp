@@ -74,23 +74,32 @@ static DecodeStatus decodeGPRAsMem(MCInst &Inst, unsigned RegNo,
   return DecodeGPRRegisterClass(Inst, RegNo, Address, Decoder);
 }
 
-// Fixed-register operand decoders: add implied value (no bits consumed).
-static DecodeStatus decodeMemR0Fixed(MCInst &Inst, unsigned Val,
-                                     uint64_t Address,
-                                     const MCDisassembler *Dec) {
-  Inst.addOperand(MCOperand::createImm(0));
+// Instruction-level decoders for fixed-register memory forms. The implicit
+// register (@R0 / @-R15 / @R15+) has no encoding bits, so these decode the GPR
+// field(s) directly and add the implicit operand as imm(0) (matching the
+// parser; the printer supplies the @r0/@-r15/@r15+ text).
+static DecodeStatus decodeCasFixed(MCInst &Inst, unsigned Insn, uint64_t Address,
+                                   const MCDisassembler *Decoder) {
+  // cas.l Rm,Rn,@R0 : 0010 nnnn mmmm 0011 ; operands (rm, rn, @r0)
+  DecodeGPRRegisterClass(Inst, (Insn >> 4) & 0xF, Address, Decoder); // rm
+  DecodeGPRRegisterClass(Inst, (Insn >> 8) & 0xF, Address, Decoder); // rn
+  Inst.addOperand(MCOperand::createImm(0));                          // @r0
   return MCDisassembler::Success;
 }
-static DecodeStatus decodeMemDecR15(MCInst &Inst, unsigned Val,
-                                    uint64_t Address,
-                                    const MCDisassembler *Dec) {
-  Inst.addOperand(MCOperand::createReg(SH::R15));
+static DecodeStatus decodeMovMemDecR15(MCInst &Inst, unsigned Insn,
+                                       uint64_t Address,
+                                       const MCDisassembler *Decoder) {
+  // movml.l/movmu.l Rm,@-R15 : 0100 mmmm 1111 000x ; operands (rm, @-r15)
+  DecodeGPRRegisterClass(Inst, (Insn >> 8) & 0xF, Address, Decoder); // rm
+  Inst.addOperand(MCOperand::createImm(0));                          // @-r15
   return MCDisassembler::Success;
 }
-static DecodeStatus decodeMemIncR15(MCInst &Inst, unsigned Val,
-                                    uint64_t Address,
-                                    const MCDisassembler *Dec) {
-  Inst.addOperand(MCOperand::createImm(0));
+static DecodeStatus decodeMovMemIncR15(MCInst &Inst, unsigned Insn,
+                                       uint64_t Address,
+                                       const MCDisassembler *Decoder) {
+  // movml.l/movmu.l @R15+,Rn : 0100 nnnn 1111 010x ; operands (@r15+, rn)
+  Inst.addOperand(MCOperand::createImm(0));                          // @r15+
+  DecodeGPRRegisterClass(Inst, (Insn >> 8) & 0xF, Address, Decoder); // rn
   return MCDisassembler::Success;
 }
 
