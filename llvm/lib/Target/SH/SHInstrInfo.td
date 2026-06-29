@@ -3937,6 +3937,637 @@ def RTV_N_GPR : Instruction {
   let Predicates = [HasSH2A];
 }
 
+def CLRMAC : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 0;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins );
+  let AsmString = "clrmac";
+  let Predicates = [HasSH1];
+}
+
+def CLRT : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 0;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins );
+  let AsmString = "clrt";
+  let Predicates = [HasSH1];
+}
+
+def LDBANK_MemReg_R0Fixed : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 1;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "ldbank\t@${rm}, r0";
+  let Predicates = [HasSH2A];
+}
+
+def LDC_GPR_FixedReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "ldc\t${rm}, sr";
+  let Predicates = [HasSH1];
+}
+
+def LDC_L_MemPostInc_FixedReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "ldc.l\t@${rm}+, sr";
+  let Predicates = [HasSH1];
+}
+
+def LDC_GPR_FixedReg_2 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "ldc\t${rm}, tbr";
+  let Predicates = [HasSH2A];
+}
+
+def LDC_GPR_FixedReg_3 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "ldc\t${rm}, gbr";
+  let Predicates = [HasSH1];
+}
+
+def LDC_L_MemPostInc_FixedReg_2 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "ldc.l\t@${rm}+, gbr";
+  let Predicates = [HasSH1];
+}
+
+def LDC_GPR_FixedReg_4 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "ldc\t${rm}, vbr";
+  let Predicates = [HasSH1];
+}
+
+def LDC_L_MemPostInc_FixedReg_3 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "ldc.l\t@${rm}+, vbr";
+  let Predicates = [HasSH1];
+}
+
+def LDC_GPR_FixedReg_5 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "ldc\t${rm}, ssr";
+  let Predicates = [HasSH3];
+}
+
+def LDC_L_MemPostInc_FixedReg_4 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "ldc.l\t@${rm}+, ssr";
+  let Predicates = [HasSH3];
+}
+
+def LDC_GPR_FixedReg_6 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "ldc\t${rm}, spc";
+  let Predicates = [HasSH3];
+}
+
+def LDC_L_MemPostInc_FixedReg_5 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "ldc.l\t@${rm}+, spc";
+  let Predicates = [HasSH3];
+}
+
+def LDC_GPR_BankReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<3> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  let Inst{6-4} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, BankReg:$rn);
+  let AsmString = "ldc\t${rm}, ${rn}";
+  let Predicates = [HasSH3];
+}
+
+def LDC_L_MemPostInc_BankReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<3> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  let Inst{6-4} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, BankReg:$rn);
+  let AsmString = "ldc.l\t@${rm}+, ${rn}";
+  let Predicates = [HasSH3];
+}
+
+def LDS_GPR_FixedReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "lds\t${rm}, mach";
+  let Predicates = [HasSH1];
+}
+
+def LDS_L_MemPostInc_FixedReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "lds.l\t@${rm}+, mach";
+  let Predicates = [HasSH1];
+}
+
+def LDS_GPR_FixedReg_2 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "lds\t${rm}, macl";
+  let Predicates = [HasSH1];
+}
+
+def LDS_L_MemPostInc_FixedReg_2 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "lds.l\t@${rm}+, macl";
+  let Predicates = [HasSH1];
+}
+
+def LDS_GPR_FixedReg_3 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "lds\t${rm}, pr";
+  let Predicates = [HasSH1];
+}
+
+def LDS_L_MemPostInc_FixedReg_3 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "lds.l\t@${rm}+, pr";
+  let Predicates = [HasSH1];
+}
+
+def NOP : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins );
+  let AsmString = "nop";
+  let Predicates = [HasSH1];
+}
+
+def PREF_MemReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 1;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn);
+  let AsmString = "pref\t@${rn}";
+  let Predicates = [HasSH3];
+}
+
+def RESBANK : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins );
+  let AsmString = "resbank";
+  let Predicates = [HasSH2A];
+}
+
 def RTE : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
@@ -3962,5 +4593,605 @@ def RTE : Instruction {
   dag InOperandList = (ins );
   let AsmString = "rte";
   let Predicates = [HasSH1];
+}
+
+def SETT : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 0;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins );
+  let AsmString = "sett";
+  let Predicates = [HasSH1];
+}
+
+def SLEEP : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins );
+  let AsmString = "sleep";
+  let Predicates = [HasSH1];
+}
+
+def STBANK_R0Fixed_MemReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 1;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn);
+  let AsmString = "stbank\tr0, @${rn}";
+  let Predicates = [HasSH2A];
+}
+
+def STC_FixedReg_GPR : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn);
+  let AsmString = "stc\tsr, ${rn}";
+  let Predicates = [HasSH1];
+}
+
+def STC_L_FixedReg_MemPreDec : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins MemDec:$rn);
+  let AsmString = "stc.l\tsr, ${rn}";
+  let Predicates = [HasSH1];
+}
+
+def STC_FixedReg_GPR_2 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn);
+  let AsmString = "stc\ttbr, ${rn}";
+  let Predicates = [HasSH2A];
+}
+
+def STC_FixedReg_GPR_3 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn);
+  let AsmString = "stc\tgbr, ${rn}";
+  let Predicates = [HasSH1];
+}
+
+def STC_L_FixedReg_MemPreDec_2 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins MemDec:$rn);
+  let AsmString = "stc.l\tgbr, ${rn}";
+  let Predicates = [HasSH1];
+}
+
+def STC_FixedReg_GPR_4 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn);
+  let AsmString = "stc\tvbr, ${rn}";
+  let Predicates = [HasSH1];
+}
+
+def STC_L_FixedReg_MemPreDec_3 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins MemDec:$rn);
+  let AsmString = "stc.l\tvbr, ${rn}";
+  let Predicates = [HasSH1];
+}
+
+def STC_FixedReg_GPR_5 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn);
+  let AsmString = "stc\tssr, ${rn}";
+  let Predicates = [HasSH3];
+}
+
+def STC_L_FixedReg_MemPreDec_4 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins MemDec:$rn);
+  let AsmString = "stc.l\tssr, ${rn}";
+  let Predicates = [HasSH3];
+}
+
+def STC_FixedReg_GPR_6 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn);
+  let AsmString = "stc\tspc, ${rn}";
+  let Predicates = [HasSH3];
+}
+
+def STC_L_FixedReg_MemPreDec_5 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins MemDec:$rn);
+  let AsmString = "stc.l\tspc, ${rn}";
+  let Predicates = [HasSH3];
+}
+
+def STC_BankReg_GPR : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<3> rm;
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{6-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins BankReg:$rm, GPR:$rn);
+  let AsmString = "stc\t${rm}, ${rn}";
+  let Predicates = [HasSH3];
+}
+
+def STC_L_BankReg_MemPreDec : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<3> rm;
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{6-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins BankReg:$rm, MemDec:$rn);
+  let AsmString = "stc.l\t${rm}, ${rn}";
+  let Predicates = [HasSH3];
+}
+
+def STS_FixedReg_GPR : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn);
+  let AsmString = "sts\tmach, ${rn}";
+  let Predicates = [HasSH1];
+}
+
+def STS_L_FixedReg_MemPreDec : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins MemDec:$rn);
+  let AsmString = "sts.l\tmach, ${rn}";
+  let Predicates = [HasSH1];
+}
+
+def STS_FixedReg_GPR_2 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn);
+  let AsmString = "sts\tmacl, ${rn}";
+  let Predicates = [HasSH1];
+}
+
+def STS_L_FixedReg_MemPreDec_2 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins MemDec:$rn);
+  let AsmString = "sts.l\tmacl, ${rn}";
+  let Predicates = [HasSH1];
+}
+
+def STS_FixedReg_GPR_3 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn);
+  let AsmString = "sts\tpr, ${rn}";
+  let Predicates = [HasSH1];
+}
+
+def STS_L_FixedReg_MemPreDec_3 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins MemDec:$rn);
+  let AsmString = "sts.l\tpr, ${rn}";
+  let Predicates = [HasSH1];
+}
+
+def TRAPA_Imm : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<8> imm;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 1;
+  let Inst{8} = 1;
+  let Inst{7-0} = imm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins SHImm:$imm);
+  let AsmString = "trapa\t${imm}";
+  let Predicates = [HasSH1];
+}
+
+def BGND : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins );
+  let AsmString = "bgnd";
+  let Predicates = [HasJ2];
 }
 

@@ -10,3 +10,14 @@ foreach i = 0-15 in {
 }
 
 def GPR : RegisterClass<"SH", [i32], 32, (sequence "R%u", 0, 15)>;
+
+class SHBankReg<bits<3> enc, string n> : Register<n> {
+  let HWEncoding{2-0} = enc;
+  let Namespace = "SH";
+}
+
+foreach i = 0-7 in {
+  def R#i#_BANK : SHBankReg<i, "r"#i#"_bank">;
+}
+
+def BankReg : RegisterClass<"SH", [i32], 32, (sequence "R%u_BANK", 0, 7)>;

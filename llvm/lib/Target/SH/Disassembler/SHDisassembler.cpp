@@ -74,6 +74,19 @@ static DecodeStatus decodeGPRAsMem(MCInst &Inst, unsigned RegNo,
   return DecodeGPRRegisterClass(Inst, RegNo, Address, Decoder);
 }
 
+static const MCPhysReg BankRegDecoderTable[8] = {
+    SH::R0_BANK, SH::R1_BANK, SH::R2_BANK, SH::R3_BANK,
+    SH::R4_BANK, SH::R5_BANK, SH::R6_BANK, SH::R7_BANK,
+};
+static DecodeStatus DecodeBankRegRegisterClass(MCInst &Inst, unsigned RegNo,
+                                               uint64_t Address,
+                                               const MCDisassembler *Decoder) {
+  if (RegNo > 7)
+    return MCDisassembler::Fail;
+  Inst.addOperand(MCOperand::createReg(BankRegDecoderTable[RegNo]));
+  return MCDisassembler::Success;
+}
+
 // Instruction-level decoders for fixed-register memory forms. The implicit
 // register (@R0 / @-R15 / @R15+) has no encoding bits, so these decode the GPR
 // field(s) directly and add the implicit operand as imm(0) (matching the

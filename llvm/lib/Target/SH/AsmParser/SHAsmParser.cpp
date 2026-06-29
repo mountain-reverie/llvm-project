@@ -317,6 +317,13 @@ MCRegister SHAsmParser::matchRegisterByName(StringRef Name) {
   if (!Lower.consume_front("r"))
     return MCRegister();
   unsigned N;
+  // Banked GPR: rN_bank (N = 0..7)
+  StringRef Bank = Lower;
+  if (Bank.consume_back("_bank")) {
+    if (!Bank.getAsInteger(10, N) && N <= 7)
+      return MCRegister(SH::R0_BANK + N);
+    return MCRegister();
+  }
   if (Lower.getAsInteger(10, N) || N > 15)
     return MCRegister();
   return MCRegister(SH::R0 + N);
