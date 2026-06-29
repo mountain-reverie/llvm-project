@@ -104,17 +104,21 @@ class SHDispAsmOperand<string N, string Pred> : AsmOperandClass {
   let PredicateMethod = Pred;
 }
 
-def Memdisp_b4AsmOperand : SHDispAsmOperand<"Memdisp_b4", "isMemdisp_b4">;
-def Memdisp_w4AsmOperand : SHDispAsmOperand<"Memdisp_w4", "isMemdisp_w4">;
-def Memdisp_l4AsmOperand : SHDispAsmOperand<"Memdisp_l4", "isMemdisp_l4">;
+// 12-bit (SH-2A two-word) forms must be defined before the 4-bit forms so that
+// the 4-bit SuperClasses forward reference resolves in TableGen.
+def Memdisp_b12AsmOperand : SHDispAsmOperand<"Memdisp_b12", "isMemdisp_b12">;
+def Memdisp_w12AsmOperand : SHDispAsmOperand<"Memdisp_w12", "isMemdisp_w12">;
+def Memdisp_l12AsmOperand : SHDispAsmOperand<"Memdisp_l12", "isMemdisp_l12">;
+// 4-bit forms are subclasses of the 12-bit forms so the asm matcher prefers the
+// shorter 16-bit encoding when both constraints are satisfied.
+def Memdisp_b4AsmOperand : SHDispAsmOperand<"Memdisp_b4", "isMemdisp_b4"> { let SuperClasses = [Memdisp_b12AsmOperand]; }
+def Memdisp_w4AsmOperand : SHDispAsmOperand<"Memdisp_w4", "isMemdisp_w4"> { let SuperClasses = [Memdisp_w12AsmOperand]; }
+def Memdisp_l4AsmOperand : SHDispAsmOperand<"Memdisp_l4", "isMemdisp_l4"> { let SuperClasses = [Memdisp_l12AsmOperand]; }
 def Gbrdisp_b8AsmOperand : SHDispAsmOperand<"Gbrdisp_b8", "isGbrdisp_b8">;
 def Gbrdisp_w8AsmOperand : SHDispAsmOperand<"Gbrdisp_w8", "isGbrdisp_w8">;
 def Gbrdisp_l8AsmOperand : SHDispAsmOperand<"Gbrdisp_l8", "isGbrdisp_l8">;
 def Pcdisp_w8AsmOperand  : SHDispAsmOperand<"Pcdisp_w8",  "isPcdisp_w8">;
 def Pcdisp_l8AsmOperand  : SHDispAsmOperand<"Pcdisp_l8",  "isPcdisp_l8">;
-def Memdisp_b12AsmOperand : SHDispAsmOperand<"Memdisp_b12", "isMemdisp_b12">;
-def Memdisp_w12AsmOperand : SHDispAsmOperand<"Memdisp_w12", "isMemdisp_w12">;
-def Memdisp_l12AsmOperand : SHDispAsmOperand<"Memdisp_l12", "isMemdisp_l12">;
 
 class SHDispOperand<AsmOperandClass MC, string scale> : Operand<i32> {
   let ParserMatchClass = MC;
