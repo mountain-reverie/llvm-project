@@ -165,6 +165,14 @@ public:
     }
     return false;
   }
+  bool isMemdisp_d12() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return V % 8 == 0 && V / 8 >= 0 && V / 8 <= 4095;
+    }
+    return false;
+  }
   bool isMem()        const override { return false; }
   bool isMemDec()     const { return Kind == k_MemDec; }
   bool isMemR0Idx()   const { return Kind == k_MemR0Idx; }
@@ -317,11 +325,34 @@ public:
 
 } // end anonymous namespace
 
+// Explicit even-register tables for DR/XD (not enum-contiguous).
+static const MCPhysReg DRParserTable[8] = {
+    SH::DR0, SH::DR2, SH::DR4, SH::DR6,
+    SH::DR8, SH::DR10, SH::DR12, SH::DR14};
+static const MCPhysReg XDParserTable[8] = {
+    SH::XD0, SH::XD2, SH::XD4, SH::XD6,
+    SH::XD8, SH::XD10, SH::XD12, SH::XD14};
+
 MCRegister SHAsmParser::matchRegisterByName(StringRef Name) {
   StringRef Lower = Name.lower();
   // Floating-point control registers.
   if (Lower == "fpul")  return MCRegister(SH::FPUL);
   if (Lower == "fpscr") return MCRegister(SH::FPSCR);
+  // Double-precision drN/xdN (N even, 0..14) — check before 'fr'/'r'.
+  if (Lower.size() >= 3 && Lower.starts_with("dr")) {
+    StringRef Rest = Lower.drop_front(2);
+    unsigned N;
+    if (!Rest.getAsInteger(10, N) && N <= 14 && (N % 2) == 0)
+      return MCRegister(DRParserTable[N / 2]);
+    return MCRegister();
+  }
+  if (Lower.size() >= 3 && Lower.starts_with("xd")) {
+    StringRef Rest = Lower.drop_front(2);
+    unsigned N;
+    if (!Rest.getAsInteger(10, N) && N <= 14 && (N % 2) == 0)
+      return MCRegister(XDParserTable[N / 2]);
+    return MCRegister();
+  }
   // Floating-point register frN (N = 0..15) — must check before 'r' prefix.
   if (Lower.size() >= 3 && Lower.starts_with("fr")) {
     StringRef F = Lower.drop_front(2);

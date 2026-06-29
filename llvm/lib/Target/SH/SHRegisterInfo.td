@@ -29,3 +29,10 @@ def FReg : RegisterClass<"SH", [f32], 32, (sequence "FR%u", 0, 15)>;
 
 def FPUL  : SHReg<0, "fpul">;
 def FPSCR : SHReg<0, "fpscr">;
+
+foreach i = [0,2,4,6,8,10,12,14] in {
+  def DR#i : SHReg<!srl(i,1), "dr"#i>;
+  def XD#i : SHReg<!srl(i,1), "xd"#i>;
+}
+def DReg : RegisterClass<"SH", [f64], 64, (add DR0,DR2,DR4,DR6,DR8,DR10,DR12,DR14)>;
+def XReg : RegisterClass<"SH", [f64], 64, (add XD0,XD2,XD4,XD6,XD8,XD10,XD12,XD14)>;

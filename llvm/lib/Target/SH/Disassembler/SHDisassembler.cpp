@@ -155,6 +155,33 @@ static DecodeStatus decodeDisp_s4(MCInst &Inst, unsigned Val, uint64_t Address,
   Inst.addOperand(MCOperand::createImm(Val * 4));
   return MCDisassembler::Success;
 }
+static DecodeStatus decodeDisp_s8(MCInst &Inst, unsigned Val, uint64_t Address,
+                                  const MCDisassembler *Dec) {
+  Inst.addOperand(MCOperand::createImm(Val * 8));
+  return MCDisassembler::Success;
+}
+
+static const MCPhysReg DRDecoderTable[8] = {
+    SH::DR0, SH::DR2, SH::DR4, SH::DR6,
+    SH::DR8, SH::DR10, SH::DR12, SH::DR14};
+static const MCPhysReg XDDecoderTable[8] = {
+    SH::XD0, SH::XD2, SH::XD4, SH::XD6,
+    SH::XD8, SH::XD10, SH::XD12, SH::XD14};
+
+static DecodeStatus DecodeDRegRegisterClass(MCInst &Inst, unsigned RegNo,
+                                            uint64_t Address,
+                                            const MCDisassembler *Decoder) {
+  if (RegNo > 7) return MCDisassembler::Fail;
+  Inst.addOperand(MCOperand::createReg(DRDecoderTable[RegNo]));
+  return MCDisassembler::Success;
+}
+static DecodeStatus DecodeXRegRegisterClass(MCInst &Inst, unsigned RegNo,
+                                            uint64_t Address,
+                                            const MCDisassembler *Decoder) {
+  if (RegNo > 7) return MCDisassembler::Fail;
+  Inst.addOperand(MCOperand::createReg(XDDecoderTable[RegNo]));
+  return MCDisassembler::Success;
+}
 
 // Branch displacement decoders: sign-extend and scale by 2.
 // Branch displacement decoders: sign-extend the field and scale ×2, emitting a

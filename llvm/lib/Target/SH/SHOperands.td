@@ -118,6 +118,7 @@ class SHDispAsmOperand<string N, string Pred> : AsmOperandClass {
 def Memdisp_b12AsmOperand : SHDispAsmOperand<"Memdisp_b12", "isMemdisp_b12">;
 def Memdisp_w12AsmOperand : SHDispAsmOperand<"Memdisp_w12", "isMemdisp_w12">;
 def Memdisp_l12AsmOperand : SHDispAsmOperand<"Memdisp_l12", "isMemdisp_l12">;
+def Memdisp_d12AsmOperand : SHDispAsmOperand<"Memdisp_d12", "isMemdisp_d12">;
 // 4-bit forms are subclasses of the 12-bit forms so the asm matcher prefers the
 // shorter 16-bit encoding when both constraints are satisfied.
 def Memdisp_b4AsmOperand : SHDispAsmOperand<"Memdisp_b4", "isMemdisp_b4"> { let SuperClasses = [Memdisp_b12AsmOperand]; }
@@ -144,6 +145,8 @@ def memdisp_l4 : SHDispOperand<Memdisp_l4AsmOperand, "4">;
 def memdisp_b12 : SHDispOperand<Memdisp_b12AsmOperand, "1">;
 def memdisp_w12 : SHDispOperand<Memdisp_w12AsmOperand, "2">;
 def memdisp_l12 : SHDispOperand<Memdisp_l12AsmOperand, "4">;
+// 12-bit displacement field for double-precision FP (scale 8).
+def memdisp_d12 : SHDispOperand<Memdisp_d12AsmOperand, "8">;
 // 8-bit displacement fields for GBR-relative addressing.
 def gbrdisp_b8 : SHDispOperand<Gbrdisp_b8AsmOperand, "1">;
 def gbrdisp_w8 : SHDispOperand<Gbrdisp_w8AsmOperand, "2">;

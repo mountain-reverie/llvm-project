@@ -64,6 +64,11 @@ public:
                       const MCSubtargetInfo &STI) const {
     return static_cast<unsigned>(MI.getOperand(OpNo).getImm()) / 4;
   }
+  unsigned getDisp_s8(const MCInst &MI, unsigned OpNo,
+                      SmallVectorImpl<MCFixup> &Fixups,
+                      const MCSubtargetInfo &STI) const {
+    return static_cast<unsigned>(MI.getOperand(OpNo).getImm()) / 8;
+  }
 
   // PC-relative displacement encoders: handle both concrete immediates and
   // symbol expressions. For a symbol, push a fixup and emit 0.
