@@ -116,12 +116,17 @@ DecodeStatus SHDisassembler::getInstruction(MCInst &Instr, uint64_t &Size,
                                              ArrayRef<uint8_t> Bytes,
                                              uint64_t Address,
                                              raw_ostream &CStream) const {
-  if (Bytes.size() < 2) {
-    Size = 0;
-    return MCDisassembler::Fail;
+  if (Bytes.size() >= 4) {
+    uint32_t Insn32 = (uint32_t(support::endian::read16be(Bytes.data())) << 16) |
+                      support::endian::read16be(Bytes.data() + 2);
+    DecodeStatus S = decodeInstruction(DecoderTableSH32, Instr, Insn32, Address, this, STI);
+    if (S != MCDisassembler::Fail) { Size = 4; return S; }
   }
-  // Read 2 bytes big-endian
-  uint16_t Insn = support::endian::read16be(Bytes.data());
-  Size = 2;
-  return decodeInstruction(DecoderTableSH16, Instr, Insn, Address, this, STI);
+  if (Bytes.size() >= 2) {
+    uint16_t Insn16 = support::endian::read16be(Bytes.data());
+    Size = 2;
+    return decodeInstruction(DecoderTableSH16, Instr, Insn16, Address, this, STI);
+  }
+  Size = 0;
+  return MCDisassembler::Fail;
 }
