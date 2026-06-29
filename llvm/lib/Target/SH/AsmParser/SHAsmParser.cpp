@@ -641,7 +641,8 @@ bool SHAsmParser::parseOperand(OperandVector &Operands, StringRef Mnemonic) {
   // literal-token matchables match (they have no encoding field / operand).
   if (Parser.getTok().is(AsmToken::Identifier)) {
     static const StringRef SpecialRegs[] = {
-        "sr", "gbr", "vbr", "ssr", "spc", "tbr", "mach", "macl", "pr"};
+        "sr", "gbr", "vbr", "ssr", "spc", "tbr", "mach", "macl", "pr",
+        "sgr", "dbr"};
     StringRef TokStr = Parser.getTok().getString();
     for (StringRef R : SpecialRegs) {
       if (TokStr.equals_insensitive(R)) {
