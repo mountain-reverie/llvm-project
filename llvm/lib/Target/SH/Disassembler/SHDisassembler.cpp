@@ -183,6 +183,15 @@ static DecodeStatus DecodeXRegRegisterClass(MCInst &Inst, unsigned RegNo,
   return MCDisassembler::Success;
 }
 
+static const MCPhysReg FVDecoderTable[4] = {SH::FV0, SH::FV4, SH::FV8, SH::FV12};
+static DecodeStatus DecodeFVRegRegisterClass(MCInst &Inst, unsigned RegNo,
+                                             uint64_t Address,
+                                             const MCDisassembler *Decoder) {
+  if (RegNo > 3) return MCDisassembler::Fail;
+  Inst.addOperand(MCOperand::createReg(FVDecoderTable[RegNo]));
+  return MCDisassembler::Success;
+}
+
 // Branch displacement decoders: sign-extend and scale by 2.
 // Branch displacement decoders: sign-extend the field and scale ×2, emitting a
 // PC-relative displacement immediate (not an absolute target — `-disassemble`

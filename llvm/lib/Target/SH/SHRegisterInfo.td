@@ -36,3 +36,10 @@ foreach i = [0,2,4,6,8,10,12,14] in {
 }
 def DReg : RegisterClass<"SH", [f64], 64, (add DR0,DR2,DR4,DR6,DR8,DR10,DR12,DR14)>;
 def XReg : RegisterClass<"SH", [f64], 64, (add XD0,XD2,XD4,XD6,XD8,XD10,XD12,XD14)>;
+
+foreach i = [0,4,8,12] in {
+  def FV#i : SHReg<!srl(i,2), "fv"#i>;
+}
+def FVReg : RegisterClass<"SH", [v4f32], 128, (add FV0,FV4,FV8,FV12)>;
+
+def XMTRX : SHReg<0, "xmtrx">;

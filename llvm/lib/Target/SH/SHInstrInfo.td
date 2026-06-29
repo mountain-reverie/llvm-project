@@ -6249,6 +6249,60 @@ def FTRC_FReg_FixedReg : Instruction {
   let Predicates = [HasSH2E];
 }
 
+def FIPR_FVReg_FVReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<2> rm;
+  bits<2> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{7} = 1;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{9-8} = rm;
+  let Inst{11-10} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FVReg:$rm, FVReg:$rn);
+  let AsmString = "fipr\t${rm}, ${rn}";
+  let Predicates = [HasSH4];
+}
+
+def FTRV_FixedReg_FVReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<2> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{9} = 0;
+  let Inst{8} = 1;
+  let Inst{7} = 1;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-10} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FVReg:$rn);
+  let AsmString = "ftrv\txmtrx, ${rn}";
+  let Predicates = [HasSH4];
+}
+
 def FSRRA_FReg : Instruction {
   let Namespace = "SH";
   bits<16> Inst;

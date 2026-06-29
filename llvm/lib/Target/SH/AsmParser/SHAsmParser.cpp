@@ -332,12 +332,25 @@ static const MCPhysReg DRParserTable[8] = {
 static const MCPhysReg XDParserTable[8] = {
     SH::XD0, SH::XD2, SH::XD4, SH::XD6,
     SH::XD8, SH::XD10, SH::XD12, SH::XD14};
+static const MCPhysReg FVParserTable[4] = {SH::FV0, SH::FV4, SH::FV8, SH::FV12};
 
 MCRegister SHAsmParser::matchRegisterByName(StringRef Name) {
   StringRef Lower = Name.lower();
   // Floating-point control registers.
   if (Lower == "fpul")  return MCRegister(SH::FPUL);
   if (Lower == "fpscr") return MCRegister(SH::FPSCR);
+  // Vector/matrix registers — check xmtrx before fv to avoid prefix truncation.
+  if (Lower == "xmtrx")
+    return MCRegister(SH::XMTRX);
+  {
+    StringRef LV = Lower;
+    if (LV.consume_front("fv")) {
+      unsigned N;
+      if (!LV.getAsInteger(10, N) && (N == 0 || N == 4 || N == 8 || N == 12))
+        return FVParserTable[N / 4];
+      return MCRegister();
+    }
+  }
   // Double-precision drN/xdN (N even, 0..14) — check before 'fr'/'r'.
   if (Lower.size() >= 3 && Lower.starts_with("dr")) {
     StringRef Rest = Lower.drop_front(2);
