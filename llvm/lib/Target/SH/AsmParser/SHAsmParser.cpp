@@ -576,6 +576,24 @@ bool SHAsmParser::parseOperand(OperandVector &Operands, StringRef Mnemonic) {
     return false;
   }
 
+  // Special registers appear as literal tokens in the AsmString (e.g.
+  // "ldc $rm, sr"). Recognize the in-scope names and emit them as tokens so the
+  // literal-token matchables match (they have no encoding field / operand).
+  if (Parser.getTok().is(AsmToken::Identifier)) {
+    static const StringRef SpecialRegs[] = {
+        "sr", "gbr", "vbr", "ssr", "spc", "tbr", "mach", "macl", "pr"};
+    StringRef TokStr = Parser.getTok().getString();
+    for (StringRef R : SpecialRegs) {
+      if (TokStr.equals_insensitive(R)) {
+        // Emit the static literal so the token string has stable lifetime and
+        // matches the lowercase AsmString literal in the matcher table.
+        Operands.push_back(SHOperand::createToken(R, Parser.getTok().getLoc()));
+        Parser.Lex();
+        return false;
+      }
+    }
+  }
+
   const MCExpr *Expr;
   if (!Parser.parseExpression(Expr)) {
     Operands.push_back(SHOperand::createImm(Expr, S, Parser.getTok().getLoc()));
