@@ -110,6 +110,23 @@ static DecodeStatus decodeDisp_s4(MCInst &Inst, unsigned Val, uint64_t Address,
   return MCDisassembler::Success;
 }
 
+// Branch displacement decoders: sign-extend and scale by 2.
+static DecodeStatus decodeBranchDisp8(MCInst &Inst, unsigned Val,
+                                      uint64_t Address,
+                                      const MCDisassembler *Dec) {
+  int8_t SVal = static_cast<int8_t>(Val & 0xFF);
+  Inst.addOperand(MCOperand::createImm(SVal * 2));
+  return MCDisassembler::Success;
+}
+static DecodeStatus decodeBranchDisp12(MCInst &Inst, unsigned Val,
+                                       uint64_t Address,
+                                       const MCDisassembler *Dec) {
+  // Sign-extend 12-bit field.
+  int32_t SVal = static_cast<int32_t>(Val << 20) >> 20;
+  Inst.addOperand(MCOperand::createImm(SVal * 2));
+  return MCDisassembler::Success;
+}
+
 #include "SHGenDisassemblerTables.inc"
 
 DecodeStatus SHDisassembler::getInstruction(MCInst &Instr, uint64_t &Size,

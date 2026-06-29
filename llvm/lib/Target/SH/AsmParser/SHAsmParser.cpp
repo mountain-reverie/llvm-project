@@ -125,6 +125,22 @@ public:
     }
     return true; // non-constant expr: let fixup handle range
   }
+  bool isBranchDisp8() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return V % 2 == 0 && V / 2 >= -128 && V / 2 <= 127;
+    }
+    return true; // symbol expr: fixup handles range
+  }
+  bool isBranchDisp12() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return V % 2 == 0 && V / 2 >= -2048 && V / 2 <= 2047;
+    }
+    return true; // symbol expr: fixup handles range
+  }
   bool isMemdisp_b12() const {
     if (Kind != k_Immediate) return false;
     if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {

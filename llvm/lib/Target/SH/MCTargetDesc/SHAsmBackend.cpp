@@ -34,8 +34,10 @@ public:
     // SH 2-byte instructions: displacement is byte 1 (low byte, big-endian).
     // TargetOffset=8 means 8 bits from the instruction's MSB = byte index 1.
     const static MCFixupKindInfo Infos[SH::NumTargetFixupKinds] = {
-        {"fixup_sh_pcrel8_w", 8, 8, 0}, // R_SH_DIR8WPZ: mov.w @(disp,pc)
-        {"fixup_sh_pcrel8_l", 8, 8, 0}, // R_SH_DIR8WPL: mov.l @(disp,pc), mova
+        {"fixup_sh_pcrel8_w", 8, 8, 0},        // R_SH_DIR8WPZ: mov.w @(disp,pc)
+        {"fixup_sh_pcrel8_l", 8, 8, 0},        // R_SH_DIR8WPL: mov.l @(disp,pc), mova
+        {"fixup_sh_pcrel8_branch", 8, 8, 0},   // R_SH_DIR8WPN: bt/bf (disp8)
+        {"fixup_sh_pcrel12_branch", 4, 12, 0}, // R_SH_IND12W: bra/bsr (disp12)
     };
     if (Kind < FirstTargetFixupKind)
       return MCAsmBackend::getFixupKindInfo(Kind);
@@ -75,11 +77,35 @@ public:
       }
       break;
     }
+    case SH::fixup_sh_pcrel8_branch - FirstTargetFixupKind:
+      // bt/bf/bt.s/bf.s: target = (PC+4) + disp*2 => disp = (S+A-P - 4)/2
+      Encoded = (SVal - 4) / 2;
+      if (Encoded < -128 || Encoded > 127) {
+        getContext().reportError(Fixup.getLoc(),
+                                 "branch target out of range (disp8)");
+        return;
+      }
+      break; // 8-bit field written by the trailing Data[off+1] store
+    case SH::fixup_sh_pcrel12_branch - FirstTargetFixupKind: {
+      // bra/bsr: target = (PC+4) + disp*2 => disp = (S+A-P - 4)/2 (signed 12-bit)
+      Encoded = (SVal - 4) / 2;
+      if (Encoded < -2048 || Encoded > 2047) {
+        getContext().reportError(Fixup.getLoc(),
+                                 "branch target out of range (disp12)");
+        return;
+      }
+      // Data points to the first byte of the instruction (Contents + fixup_offset).
+      // 12-bit field: opcode nibble in bits 15-12, disp in bits 11-0.
+      Data[0] = (Data[0] & 0xF0) | ((Encoded >> 8) & 0x0F);
+      Data[1] = static_cast<uint8_t>(Encoded & 0xFF);
+      return;
+    }
     default:
       return;
     }
-    // Write to byte 1 of the big-endian 2-byte instruction word.
-    Data[Fixup.getOffset() + 1] = static_cast<uint8_t>(Encoded & 0xFF);
+    // Data points to the first byte of the instruction (Contents + fixup_offset).
+    // Displacement is in byte 1 (low byte of the big-endian 2-byte instruction).
+    Data[1] = static_cast<uint8_t>(Encoded & 0xFF);
   }
 
   bool writeNopData(raw_ostream &OS, uint64_t Count,

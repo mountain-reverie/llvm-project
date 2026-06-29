@@ -150,3 +150,17 @@ class SHPCDispOperand<AsmOperandClass MC, string scale, string enc> : Operand<i3
 def pcdisp_w8  : SHPCDispOperand<Pcdisp_w8AsmOperand, "2", "getPCDisp_s2">;
 def pcdisp_l8  : SHPCDispOperand<Pcdisp_l8AsmOperand, "4", "getPCDisp_s4">;
 
+def Bdisp8AsmOperand  : SHDispAsmOperand<"Bdisp8",  "isBranchDisp8">;
+def Bdisp12AsmOperand : SHDispAsmOperand<"Bdisp12", "isBranchDisp12">;
+
+// PC-relative branch targets: signed, word-scaled (×2), base PC+4. The encoder
+// emits a fixup when the operand is a symbol expression.
+class SHBranchOperand<AsmOperandClass MC, string enc, string dec> : Operand<i32> {
+  let ParserMatchClass = MC;
+  let PrintMethod = "printDisp";
+  let EncoderMethod = enc;
+  let DecoderMethod = dec;
+}
+def bdisp8  : SHBranchOperand<Bdisp8AsmOperand,  "getBranchDisp8",  "decodeBranchDisp8">;
+def bdisp12 : SHBranchOperand<Bdisp12AsmOperand, "getBranchDisp12", "decodeBranchDisp12">;
+

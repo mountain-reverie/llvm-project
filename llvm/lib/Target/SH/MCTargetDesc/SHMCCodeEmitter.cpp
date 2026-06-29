@@ -94,6 +94,32 @@ public:
                                      /*PCRel=*/true));
     return 0;
   }
+
+  unsigned getBranchDisp8(const MCInst &MI, unsigned OpNo,
+                          SmallVectorImpl<MCFixup> &Fixups,
+                          const MCSubtargetInfo &STI) const {
+    const MCOperand &MO = MI.getOperand(OpNo);
+    if (MO.isImm())
+      return static_cast<unsigned>(static_cast<int>(MO.getImm()) / 2) & 0xFF;
+    assert(MO.isExpr() && "Expected immediate or expression");
+    Fixups.push_back(MCFixup::create(0, MO.getExpr(),
+                                     MCFixupKind(SH::fixup_sh_pcrel8_branch),
+                                     /*PCRel=*/true));
+    return 0;
+  }
+
+  unsigned getBranchDisp12(const MCInst &MI, unsigned OpNo,
+                           SmallVectorImpl<MCFixup> &Fixups,
+                           const MCSubtargetInfo &STI) const {
+    const MCOperand &MO = MI.getOperand(OpNo);
+    if (MO.isImm())
+      return static_cast<unsigned>(static_cast<int>(MO.getImm()) / 2) & 0xFFF;
+    assert(MO.isExpr() && "Expected immediate or expression");
+    Fixups.push_back(MCFixup::create(0, MO.getExpr(),
+                                     MCFixupKind(SH::fixup_sh_pcrel12_branch),
+                                     /*PCRel=*/true));
+    return 0;
+  }
 };
 
 } // end anonymous namespace

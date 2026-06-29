@@ -19,7 +19,11 @@ enum Fixups {
   fixup_sh_pcrel8_w = FirstTargetFixupKind,
   // R_SH_DIR8WPL (5): PC-relative longword-scaled 8-bit displacement (mov.l, mova)
   fixup_sh_pcrel8_l,
-  NumTargetFixupKinds = fixup_sh_pcrel8_l - FirstTargetFixupKind + 1
+  // R_SH_DIR8WPN (3): PC-relative word-scaled 8-bit branch (bt/bf/bt.s/bf.s)
+  fixup_sh_pcrel8_branch,
+  // R_SH_IND12W (4): PC-relative word-scaled 12-bit branch (bra/bsr)
+  fixup_sh_pcrel12_branch,
+  NumTargetFixupKinds = fixup_sh_pcrel12_branch - FirstTargetFixupKind + 1
 };
 
 } // namespace SH

@@ -3615,3 +3615,352 @@ def SHLR16_GPR : Instruction {
   let Predicates = [HasSH1];
 }
 
+def BF_BranchDisp : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<8> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 1;
+  let Inst{10} = 0;
+  let Inst{9} = 1;
+  let Inst{8} = 1;
+  let Inst{7-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins bdisp8:$disp);
+  let AsmString = "bf\t${disp}";
+  let Predicates = [HasSH1];
+}
+
+def BF_S_BranchDisp : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<8> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 1;
+  let Inst{10} = 1;
+  let Inst{9} = 1;
+  let Inst{8} = 1;
+  let Inst{7-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins bdisp8:$disp);
+  let AsmString = "bf/s\t${disp}";
+  let Predicates = [HasSH2];
+}
+
+def BT_BranchDisp : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<8> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 1;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 1;
+  let Inst{7-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins bdisp8:$disp);
+  let AsmString = "bt\t${disp}";
+  let Predicates = [HasSH1];
+}
+
+def BT_S_BranchDisp : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<8> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 1;
+  let Inst{10} = 1;
+  let Inst{9} = 0;
+  let Inst{8} = 1;
+  let Inst{7-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins bdisp8:$disp);
+  let AsmString = "bt/s\t${disp}";
+  let Predicates = [HasSH2];
+}
+
+def BRA_BranchDisp : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<12> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 0;
+  let Inst{13} = 1;
+  let Inst{12} = 0;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins bdisp12:$disp);
+  let AsmString = "bra\t${disp}";
+  let Predicates = [HasSH1];
+}
+
+def BRAF_GPR : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "braf\t${rm}";
+  let Predicates = [HasSH2];
+}
+
+def BSR_BranchDisp : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<12> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 0;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins bdisp12:$disp);
+  let AsmString = "bsr\t${disp}";
+  let Predicates = [HasSH1];
+}
+
+def BSRF_GPR : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "bsrf\t${rm}";
+  let Predicates = [HasSH2];
+}
+
+def JMP_MemReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "jmp\t@${rm}";
+  let Predicates = [HasSH1];
+}
+
+def JSR_MemReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "jsr\t@${rm}";
+  let Predicates = [HasSH1];
+}
+
+def JSR_N_MemReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "jsr/n\t@${rm}";
+  let Predicates = [HasSH2A];
+}
+
+def RTS : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins );
+  let AsmString = "rts";
+  let Predicates = [HasSH1];
+}
+
+def RTS_N : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins );
+  let AsmString = "rts/n";
+  let Predicates = [HasSH2A];
+}
+
+def RTV_N_GPR : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "rtv/n\t${rm}";
+  let Predicates = [HasSH2A];
+}
+
+def RTE : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins );
+  let AsmString = "rte";
+  let Predicates = [HasSH1];
+}
+
