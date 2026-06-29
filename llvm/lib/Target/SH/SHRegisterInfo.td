@@ -21,3 +21,11 @@ foreach i = 0-7 in {
 }
 
 def BankReg : RegisterClass<"SH", [i32], 32, (sequence "R%u_BANK", 0, 7)>;
+
+foreach i = 0-15 in {
+  def FR#i : SHReg<i, "fr"#i>;
+}
+def FReg : RegisterClass<"SH", [f32], 32, (sequence "FR%u", 0, 15)>;
+
+def FPUL  : SHReg<0, "fpul">;
+def FPSCR : SHReg<0, "fpscr">;

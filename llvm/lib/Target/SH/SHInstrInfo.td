@@ -5195,3 +5195,915 @@ def BGND : Instruction {
   let Predicates = [HasJ2];
 }
 
+def FMOV_FReg_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 0;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rm, FReg:$rn);
+  let AsmString = "fmov\t${rm}, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FMOV_S_MemReg_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 0;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, FReg:$rn);
+  let AsmString = "fmov.s\t@${rm}, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FMOV_S_FReg_MemReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rm, GPR:$rn);
+  let AsmString = "fmov.s\t${rm}, @${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FMOV_S_MemPostInc_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, FReg:$rn);
+  let AsmString = "fmov.s\t@${rm}+, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FMOV_S_FReg_MemPreDec : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rm, MemDec:$rn);
+  let AsmString = "fmov.s\t${rm}, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FMOV_S_MemR0_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins MemR0Idx:$rm, FReg:$rn);
+  let AsmString = "fmov.s\t${rm}, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FMOV_S_FReg_MemR0 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rm, MemR0Idx:$rn);
+  let AsmString = "fmov.s\t${rm}, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FMOV_S_MemDisp_FReg : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<12> disp;
+  bits<4> rn;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{19} = 0;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{23-20} = rm;
+  let Inst{11-0} = disp;
+  let Inst{27-24} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm, memdisp_l12:$disp, FReg:$rn);
+  let AsmString = "fmov.s\t@(${disp}, ${rm}), ${rn}";
+  let Predicates = [HasSH2A];
+}
+
+def FMOV_S_FReg_MemDisp : Instruction {
+  let Namespace = "SH";
+  bits<32> Inst;
+  let Size = 4;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  bits<12> disp;
+  let Inst{31} = 0;
+  let Inst{30} = 0;
+  let Inst{29} = 1;
+  let Inst{28} = 1;
+  let Inst{19} = 0;
+  let Inst{18} = 0;
+  let Inst{17} = 0;
+  let Inst{16} = 1;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{23-20} = rm;
+  let Inst{27-24} = rn;
+  let Inst{11-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rm, GPR:$rn, memdisp_l12:$disp);
+  let AsmString = "fmov.s\t${rm}, @(${disp}, ${rn})";
+  let Predicates = [HasSH2A];
+}
+
+def FLDI0_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{7} = 1;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rn);
+  let AsmString = "fldi0\t${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FLDI1_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{7} = 1;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rn);
+  let AsmString = "fldi1\t${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FLDS_FReg_FixedReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rm);
+  let AsmString = "flds\t${rm}, fpul";
+  let Predicates = [HasSH2E];
+}
+
+def FSTS_FixedReg_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rn);
+  let AsmString = "fsts\tfpul, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FABS_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rn);
+  let AsmString = "fabs\t${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FNEG_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rn);
+  let AsmString = "fneg\t${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FADD_FReg_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 0;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rm, FReg:$rn);
+  let AsmString = "fadd\t${rm}, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FSUB_FReg_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rm, FReg:$rn);
+  let AsmString = "fsub\t${rm}, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FMUL_FReg_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rm, FReg:$rn);
+  let AsmString = "fmul\t${rm}, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FMAC_FR0Fixed_FReg_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  let DecoderMethod = "decodeFmacFR0";
+  bits<4> rm;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rm, FReg:$rn);
+  let AsmString = "fmac\tfr0, ${rm}, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FDIV_FReg_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 1;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rm, FReg:$rn);
+  let AsmString = "fdiv\t${rm}, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FSQRT_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rn);
+  let AsmString = "fsqrt\t${rn}";
+  let Predicates = [HasSH3E];
+}
+
+def FCMP_EQ_FReg_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 0;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rm, FReg:$rn);
+  let AsmString = "fcmp/eq\t${rm}, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FCMP_GT_FReg_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{7-4} = rm;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rm, FReg:$rn);
+  let AsmString = "fcmp/gt\t${rm}, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FLOAT_FixedReg_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rn);
+  let AsmString = "float\tfpul, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FTRC_FReg_FixedReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rm);
+  let AsmString = "ftrc\t${rm}, fpul";
+  let Predicates = [HasSH2E];
+}
+
+def FSRRA_FReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins FReg:$rn);
+  let AsmString = "fsrra\t${rn}";
+  let Predicates = [HasSH4A];
+}
+
+def LDS_GPR_FixedReg_4 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "lds\t${rm}, fpscr";
+  let Predicates = [HasSH2E];
+}
+
+def STS_FixedReg_GPR_4 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn);
+  let AsmString = "sts\tfpscr, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def LDS_L_MemPostInc_FixedReg_4 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "lds.l\t@${rm}+, fpscr";
+  let Predicates = [HasSH2E];
+}
+
+def STS_L_FixedReg_MemPreDec_4 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 0;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins MemDec:$rn);
+  let AsmString = "sts.l\tfpscr, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def LDS_GPR_FixedReg_5 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "lds\t${rm}, fpul";
+  let Predicates = [HasSH2E];
+}
+
+def STS_FixedReg_GPR_5 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn);
+  let AsmString = "sts\tfpul, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def LDS_L_MemPostInc_FixedReg_5 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 1;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "lds.l\t@${rm}+, fpul";
+  let Predicates = [HasSH2E];
+}
+
+def STS_L_FixedReg_MemPreDec_5 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 0;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins MemDec:$rn);
+  let AsmString = "sts.l\tfpul, ${rn}";
+  let Predicates = [HasSH2E];
+}
+
+def FRCHG : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{11} = 1;
+  let Inst{10} = 0;
+  let Inst{9} = 1;
+  let Inst{8} = 1;
+  let Inst{7} = 1;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins );
+  let AsmString = "frchg";
+  let Predicates = [HasSH4];
+}
+
+def FSCHG : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 1;
+  let Inst{8} = 1;
+  let Inst{7} = 1;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins );
+  let AsmString = "fschg";
+  let Predicates = [HasSH2A];
+}
+
+def FPCHG : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{11} = 0;
+  let Inst{10} = 1;
+  let Inst{9} = 1;
+  let Inst{8} = 1;
+  let Inst{7} = 1;
+  let Inst{6} = 1;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins );
+  let AsmString = "fpchg";
+  let Predicates = [HasSH4A];
+}
+

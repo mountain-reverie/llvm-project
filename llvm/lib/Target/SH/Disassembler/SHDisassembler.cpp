@@ -74,6 +74,27 @@ static DecodeStatus decodeGPRAsMem(MCInst &Inst, unsigned RegNo,
   return DecodeGPRRegisterClass(Inst, RegNo, Address, Decoder);
 }
 
+static const MCPhysReg FRDecoderTable[16] = {
+    SH::FR0,  SH::FR1,  SH::FR2,  SH::FR3,
+    SH::FR4,  SH::FR5,  SH::FR6,  SH::FR7,
+    SH::FR8,  SH::FR9,  SH::FR10, SH::FR11,
+    SH::FR12, SH::FR13, SH::FR14, SH::FR15,
+};
+static DecodeStatus DecodeFRegRegisterClass(MCInst &Inst, unsigned RegNo,
+                                            uint64_t Address,
+                                            const MCDisassembler *Decoder) {
+  if (RegNo > 15)
+    return MCDisassembler::Fail;
+  Inst.addOperand(MCOperand::createReg(FRDecoderTable[RegNo]));
+  return MCDisassembler::Success;
+}
+
+// Temporary stub — Task 3 implements the real fmac decoder.
+static DecodeStatus decodeFmacFR0(MCInst &, unsigned, uint64_t,
+                                   const MCDisassembler *) {
+  return MCDisassembler::Fail;
+}
+
 static const MCPhysReg BankRegDecoderTable[8] = {
     SH::R0_BANK, SH::R1_BANK, SH::R2_BANK, SH::R3_BANK,
     SH::R4_BANK, SH::R5_BANK, SH::R6_BANK, SH::R7_BANK,

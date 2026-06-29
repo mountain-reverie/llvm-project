@@ -314,6 +314,17 @@ public:
 
 MCRegister SHAsmParser::matchRegisterByName(StringRef Name) {
   StringRef Lower = Name.lower();
+  // Floating-point control registers.
+  if (Lower == "fpul")  return MCRegister(SH::FPUL);
+  if (Lower == "fpscr") return MCRegister(SH::FPSCR);
+  // Floating-point register frN (N = 0..15) — must check before 'r' prefix.
+  if (Lower.size() >= 3 && Lower.starts_with("fr")) {
+    StringRef F = Lower.drop_front(2);
+    unsigned N;
+    if (!F.getAsInteger(10, N) && N <= 15)
+      return MCRegister(SH::FR0 + N);
+    return MCRegister();
+  }
   if (!Lower.consume_front("r"))
     return MCRegister();
   unsigned N;
