@@ -4541,6 +4541,33 @@ def LDS_L_MemPostInc_FixedReg_3 : Instruction {
   let Predicates = [HasSH1];
 }
 
+def LDTBL : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 0;
+  let Inst{8} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 1;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 0;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins );
+  let AsmString = "ldtbl";
+  let Predicates = [HasSH3];
+}
+
 def MOVCA_L_R0Fixed_MemReg : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
