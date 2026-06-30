@@ -518,6 +518,17 @@ ParseStatus SHAsmParser::parseMemIncR15(OperandVector &Operands) {
   return ParseStatus::Success;
 }
 
+/// Return the canonical closing-token string for a recognised special
+/// base-register name in @(r0,...) / @(disp,...) forms: "gbr)" or "pc)".
+/// Returns an empty StringRef when the name is not a recognised special base
+/// (i.e. it is a plain GPR to be handled by tryParseRegister, or unknown).
+/// The returned pointer has static storage duration — safe to use as a token.
+static StringRef specialBaseClosingToken(StringRef Lower) {
+  if (Lower == "gbr") return "gbr)";
+  if (Lower == "pc")  return "pc)";
+  return {};
+}
+
 bool SHAsmParser::parseOperand(OperandVector &Operands, StringRef Mnemonic) {
   SMLoc S = Parser.getTok().getLoc();
 
@@ -588,7 +599,8 @@ bool SHAsmParser::parseOperand(OperandVector &Operands, StringRef Mnemonic) {
         if (Parser.getTok().is(AsmToken::Identifier)) {
           StringRef BaseStr = Parser.getTok().getString().lower();
           SMLoc BaseLoc = Parser.getTok().getLoc();
-          if (BaseStr == "gbr") {
+          if (specialBaseClosingToken(BaseStr) == "gbr)") {
+            // Only 'gbr' is a valid special base after @(r0, ...).
             Parser.Lex(); // eat 'gbr'
             if (Parser.getTok().isNot(AsmToken::RParen))
               return Error(Parser.getTok().getLoc(), "expected ')' in @(r0,gbr)");
@@ -624,24 +636,17 @@ bool SHAsmParser::parseOperand(OperandVector &Operands, StringRef Mnemonic) {
       if (Parser.getTok().is(AsmToken::Identifier)) {
         StringRef BaseName = Parser.getTok().getString().lower();
         SMLoc BaseLoc = Parser.getTok().getLoc();
-        if (BaseName == "gbr") {
-          Parser.Lex(); // eat 'gbr'
+        StringRef CloseTok = specialBaseClosingToken(BaseName);
+        if (!CloseTok.empty()) {
+          // @(disp, gbr) or @(disp, pc) — special fixed-base forms.
+          Parser.Lex(); // eat base register name
           if (Parser.getTok().isNot(AsmToken::RParen))
-            return Error(Parser.getTok().getLoc(), "expected ')' in @(disp,gbr)");
+            return Error(Parser.getTok().getLoc(),
+                         "expected ')' in @(disp," + BaseName + ")");
           Parser.Lex(); // eat ')'
           Operands.push_back(SHOperand::createToken("@(", AtLoc));
           Operands.push_back(SHOperand::createImm(DispExpr, DispS, BaseLoc));
-          Operands.push_back(SHOperand::createToken("gbr)", BaseLoc));
-          return false;
-        }
-        if (BaseName == "pc") {
-          Parser.Lex(); // eat 'pc'
-          if (Parser.getTok().isNot(AsmToken::RParen))
-            return Error(Parser.getTok().getLoc(), "expected ')' in @(disp,pc)");
-          Parser.Lex(); // eat ')'
-          Operands.push_back(SHOperand::createToken("@(", AtLoc));
-          Operands.push_back(SHOperand::createImm(DispExpr, DispS, BaseLoc));
-          Operands.push_back(SHOperand::createToken("pc)", BaseLoc));
+          Operands.push_back(SHOperand::createToken(CloseTok, BaseLoc));
           return false;
         }
         // @(disp,rN)
@@ -709,6 +714,19 @@ bool SHAsmParser::parseOperand(OperandVector &Operands, StringRef Mnemonic) {
   // Special registers appear as literal tokens in the AsmString (e.g.
   // "ldc $rm, sr"). Recognize the in-scope names and emit them as tokens so the
   // literal-token matchables match (they have no encoding field / operand).
+  //
+  // INVARIANT: SpecialRegs[] MUST contain every lowercased FixedReg operand name
+  // that the generator (operand.go FixedReg tokens) emits into AsmString literals.
+  // These are NOT MCRegisters — they have no SHReg definition and cannot be
+  // derived from RegisterInfo; only fpul/fpscr/xmtrx are real MC registers.
+  //
+  // A name present here that the generator no longer emits is harmless.
+  // A generator FixedReg name MISSING here means that instruction will NOT
+  // assemble (the token won't be recognised and matching will fail silently).
+  //
+  // The lit MC tests in llvm/test/MC/SH/{system,mmu,coprocessor}.s exercise each
+  // special register and will catch drift — a missing entry causes those
+  // assemble-and-FileCheck tests to fail.
   if (Parser.getTok().is(AsmToken::Identifier)) {
     static const StringRef SpecialRegs[] = {
         "sr", "gbr", "vbr", "ssr", "spc", "tbr", "mach", "macl", "pr",
