@@ -109,6 +109,14 @@ public:
     }
     return false;
   }
+  bool isTbrdisp8() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return V % 4 == 0 && V / 4 >= 0 && V / 4 <= 255;
+    }
+    return false;
+  }
   bool isPcdisp_w8() const {
     if (Kind != k_Immediate) return false;
     if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
@@ -501,6 +509,35 @@ bool SHAsmParser::parseOperand(OperandVector &Operands, StringRef Mnemonic) {
     //
     // Determine what follows '@':
     const AsmToken &Next = Parser.getLexer().peekTok();
+
+    // @@(disp, tbr) — SH-2A jsr/n TBR-relative.
+    if (Next.is(AsmToken::At)) {
+      SMLoc AtLoc = Parser.getTok().getLoc();
+      Parser.Lex(); // eat first '@'
+      Parser.Lex(); // eat second '@'
+      if (Parser.getTok().isNot(AsmToken::LParen))
+        return Error(Parser.getTok().getLoc(), "expected '(' in @@(disp, tbr)");
+      Parser.Lex(); // eat '('
+      const MCExpr *DispExpr;
+      SMLoc DispS = Parser.getTok().getLoc();
+      if (Parser.parseExpression(DispExpr))
+        return Error(DispS, "expected displacement in @@(disp, tbr)");
+      if (Parser.getTok().isNot(AsmToken::Comma))
+        return Error(Parser.getTok().getLoc(), "expected ',' in @@(disp, tbr)");
+      Parser.Lex(); // eat ','
+      if (!(Parser.getTok().is(AsmToken::Identifier) &&
+            Parser.getTok().getString().lower() == "tbr"))
+        return Error(Parser.getTok().getLoc(), "expected 'tbr' in @@(disp, tbr)");
+      SMLoc TbrLoc = Parser.getTok().getLoc();
+      Parser.Lex(); // eat 'tbr'
+      if (Parser.getTok().isNot(AsmToken::RParen))
+        return Error(Parser.getTok().getLoc(), "expected ')' in @@(disp, tbr)");
+      Parser.Lex(); // eat ')'
+      Operands.push_back(SHOperand::createToken("@@(", AtLoc));
+      Operands.push_back(SHOperand::createImm(DispExpr, DispS, TbrLoc));
+      Operands.push_back(SHOperand::createToken("tbr)", TbrLoc));
+      return false;
+    }
 
     // @(...)  forms: @(r0,gbr), @(r0,rN), @(disp,gbr), @(disp,pc), @(disp,rN).
     if (Next.is(AsmToken::LParen)) {

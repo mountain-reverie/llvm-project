@@ -127,6 +127,7 @@ def Memdisp_l4AsmOperand : SHDispAsmOperand<"Memdisp_l4", "isMemdisp_l4"> { let 
 def Gbrdisp_b8AsmOperand : SHDispAsmOperand<"Gbrdisp_b8", "isGbrdisp_b8">;
 def Gbrdisp_w8AsmOperand : SHDispAsmOperand<"Gbrdisp_w8", "isGbrdisp_w8">;
 def Gbrdisp_l8AsmOperand : SHDispAsmOperand<"Gbrdisp_l8", "isGbrdisp_l8">;
+def Tbrdisp8AsmOperand : SHDispAsmOperand<"Tbrdisp8", "isTbrdisp8">;
 def Pcdisp_w8AsmOperand  : SHDispAsmOperand<"Pcdisp_w8",  "isPcdisp_w8">;
 def Pcdisp_l8AsmOperand  : SHDispAsmOperand<"Pcdisp_l8",  "isPcdisp_l8">;
 
@@ -151,6 +152,8 @@ def memdisp_d12 : SHDispOperand<Memdisp_d12AsmOperand, "8">;
 def gbrdisp_b8 : SHDispOperand<Gbrdisp_b8AsmOperand, "1">;
 def gbrdisp_w8 : SHDispOperand<Gbrdisp_w8AsmOperand, "2">;
 def gbrdisp_l8 : SHDispOperand<Gbrdisp_l8AsmOperand, "4">;
+// 8-bit displacement field for TBR-relative addressing (SH-2A jsr/n).
+def tbrdisp8 : SHDispOperand<Tbrdisp8AsmOperand, "4">;
 // 8-bit displacement fields for PC-relative addressing.
 // Dedicated encoder methods emit a fixup when the operand is a symbol.
 class SHPCDispOperand<AsmOperandClass MC, string scale, string enc> : Operand<i32> {

@@ -3858,6 +3858,27 @@ def JSR_N_MemReg : Instruction {
   let Predicates = [HasSH2A];
 }
 
+def JSR_N_MemTBRDisp : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<8> disp;
+  let Inst{15} = 1;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{11} = 0;
+  let Inst{10} = 0;
+  let Inst{9} = 1;
+  let Inst{8} = 1;
+  let Inst{7-0} = disp;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins tbrdisp8:$disp);
+  let AsmString = "jsr/n\t@@(${disp}, tbr)";
+  let Predicates = [HasSH2A];
+}
+
 def RTS : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
