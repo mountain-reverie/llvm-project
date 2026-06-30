@@ -78,5 +78,11 @@ void SHInstPrinter::printMemIncR15(const MCInst *MI, int OpNo, raw_ostream &O) {
 }
 
 void SHInstPrinter::printDisp(const MCInst *MI, int OpNo, raw_ostream &O) {
-  O << MI->getOperand(OpNo).getImm();
+  const MCOperand &MO = MI->getOperand(OpNo);
+  if (MO.isImm()) {
+    O << MO.getImm();
+    return;
+  }
+  assert(MO.isExpr() && "Unknown operand kind in printDisp");
+  MAI.printExpr(O, *MO.getExpr());
 }

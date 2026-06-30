@@ -2,4 +2,5 @@
 
 # Immediate operand out of 8-bit signed range — must be rejected
 mov #9999, r0
-# CHECK: error:
+# CHECK: error: unrecognized instruction mnemonic
+# CHECK: #9999

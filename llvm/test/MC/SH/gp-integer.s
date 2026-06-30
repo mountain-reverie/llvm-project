@@ -123,3 +123,7 @@ movt r0
 # CHECK: movt r0 {{.*}}encoding: [0x00,0x29]
 nop
 # CHECK: nop {{.*}}encoding: [0x00,0x09]
+
+# J-core compare-and-swap
+cas.l r1, r2, @r0
+# CHECK: cas.l r1, r2, @r0 {{.*}}encoding: [0x22,0x13]

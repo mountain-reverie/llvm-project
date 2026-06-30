@@ -67,3 +67,7 @@ lds r0, MACL
 # CHECK: lds r0, macl {{.*}}encoding: [0x40,0x1a]
 lds r0, PR
 # CHECK: lds r0, pr {{.*}}encoding: [0x40,0x2a]
+
+# J-core background debug halt
+bgnd
+# CHECK: bgnd {{.*}}encoding: [0x00,0x3b]

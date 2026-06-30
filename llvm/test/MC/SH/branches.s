@@ -24,6 +24,26 @@ rts
 rte
 # CHECK: rte {{.*}}encoding: [0x00,0x2b]
 
+# PC-relative branches with external symbol (fixup path)
+bra foo
+# CHECK: bra foo {{.*}}encoding: [0b1010AAAA,A]
+# CHECK-NEXT: {{.*}}fixup A - offset: 0, value: foo, kind: fixup_sh_pcrel12_branch
+bsr foo
+# CHECK: bsr foo {{.*}}encoding: [0b1011AAAA,A]
+# CHECK-NEXT: {{.*}}fixup A - offset: 0, value: foo, kind: fixup_sh_pcrel12_branch
+bt foo
+# CHECK: bt foo {{.*}}encoding: [0x89,A]
+# CHECK-NEXT: {{.*}}fixup A - offset: 0, value: foo, kind: fixup_sh_pcrel8_branch
+bf foo
+# CHECK: bf foo {{.*}}encoding: [0x8b,A]
+# CHECK-NEXT: {{.*}}fixup A - offset: 0, value: foo, kind: fixup_sh_pcrel8_branch
+bt/s foo
+# CHECK: bt/s foo {{.*}}encoding: [0x8d,A]
+# CHECK-NEXT: {{.*}}fixup A - offset: 0, value: foo, kind: fixup_sh_pcrel8_branch
+bf/s foo
+# CHECK: bf/s foo {{.*}}encoding: [0x8f,A]
+# CHECK-NEXT: {{.*}}fixup A - offset: 0, value: foo, kind: fixup_sh_pcrel8_branch
+
 # Condition flags
 clrt
 # CHECK: clrt {{.*}}encoding: [0x00,0x08]

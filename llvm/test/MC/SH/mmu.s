@@ -14,8 +14,10 @@ stc TSBPTR, r5
 stc TSBPTR, r15
 # CHECK: stc tsbptr, r15 {{.*}}encoding: [0x0f,0x43]
 
-# Note: stc PTEH/PTEL/ASIDR are isAsmParserOnly aliases encoding to
-# SH4A movli.l/movco.l instructions; assembler accepts them:
+# Note: stc PTEH/PTEL/ASIDR are J-core MMU register reads assembled and printed
+# as their own MCInsts. PTEL/ASIDR happen to share encodings with SH4A
+# movli.l/movco.l — the DISASSEMBLER emits the SH4A mnemonic for those bytes,
+# but the assembler and printer use the J-core names.
 stc PTEH, r0
 # CHECK: stc pteh, r0 {{.*}}encoding: [0x00,0x53]
 stc PTEH, r3
