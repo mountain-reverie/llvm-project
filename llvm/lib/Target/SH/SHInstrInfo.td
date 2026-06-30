@@ -5674,6 +5674,210 @@ def BGND : Instruction {
   let Predicates = [HasJ2];
 }
 
+def LDS_GPR_FixedReg_4 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 1;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "lds\t${rm}, cp0_com";
+  let Predicates = [HasJ2];
+}
+
+def STS_FixedReg_GPR_4 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 1;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn);
+  let AsmString = "sts\tcp0_com, ${rn}";
+  let Predicates = [HasJ2];
+}
+
+def CLDS_CP0Reg_FixedReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 1;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins CP0Reg:$rm);
+  let AsmString = "clds\t${rm}, cp0_com";
+  let Predicates = [HasJ2];
+}
+
+def CSTS_FixedReg_CP0Reg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 1;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins CP0Reg:$rn);
+  let AsmString = "csts\tcp0_com, ${rn}";
+  let Predicates = [HasJ2];
+}
+
+def LDS_GPR_FixedReg_5 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 0;
+  let Inst{14} = 1;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rm);
+  let AsmString = "lds\t${rm}, cpi_com";
+  let Predicates = [HasJ2];
+  let isAsmParserOnly = 1;
+}
+
+def STS_FixedReg_GPR_5 : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 0;
+  let Inst{14} = 0;
+  let Inst{13} = 0;
+  let Inst{12} = 0;
+  let Inst{7} = 0;
+  let Inst{6} = 1;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 0;
+  let Inst{1} = 1;
+  let Inst{0} = 0;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins GPR:$rn);
+  let AsmString = "sts\tcpi_com, ${rn}";
+  let Predicates = [HasJ2];
+  let isAsmParserOnly = 1;
+}
+
+def CLDS_CPIReg_FixedReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rm;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 1;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rm;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins CPIReg:$rm);
+  let AsmString = "clds\t${rm}, cpi_com";
+  let Predicates = [HasJ2];
+  let isAsmParserOnly = 1;
+}
+
+def CSTS_FixedReg_CPIReg : Instruction {
+  let Namespace = "SH";
+  bits<16> Inst;
+  let Size = 2;
+  let DecoderNamespace = "SH";
+  bits<4> rn;
+  let Inst{15} = 1;
+  let Inst{14} = 1;
+  let Inst{13} = 1;
+  let Inst{12} = 1;
+  let Inst{7} = 0;
+  let Inst{6} = 0;
+  let Inst{5} = 0;
+  let Inst{4} = 0;
+  let Inst{3} = 1;
+  let Inst{2} = 1;
+  let Inst{1} = 0;
+  let Inst{0} = 1;
+  let Inst{11-8} = rn;
+  dag OutOperandList = (outs);
+  dag InOperandList = (ins CPIReg:$rn);
+  let AsmString = "csts\tcpi_com, ${rn}";
+  let Predicates = [HasJ2];
+  let isAsmParserOnly = 1;
+}
+
 def FMOV_FReg_FReg : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
@@ -7165,7 +7369,7 @@ def FCNVSD_FixedReg_DReg : Instruction {
   let Predicates = [HasSH2A];
 }
 
-def LDS_GPR_FixedReg_4 : Instruction {
+def LDS_GPR_FixedReg_6 : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
   let Size = 2;
@@ -7190,7 +7394,7 @@ def LDS_GPR_FixedReg_4 : Instruction {
   let Predicates = [HasSH2E];
 }
 
-def STS_FixedReg_GPR_4 : Instruction {
+def STS_FixedReg_GPR_6 : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
   let Size = 2;
@@ -7265,7 +7469,7 @@ def STS_L_FixedReg_MemPreDec_4 : Instruction {
   let Predicates = [HasSH2E];
 }
 
-def LDS_GPR_FixedReg_5 : Instruction {
+def LDS_GPR_FixedReg_7 : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
   let Size = 2;
@@ -7290,7 +7494,7 @@ def LDS_GPR_FixedReg_5 : Instruction {
   let Predicates = [HasSH2E];
 }
 
-def STS_FixedReg_GPR_5 : Instruction {
+def STS_FixedReg_GPR_7 : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
   let Size = 2;

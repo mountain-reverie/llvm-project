@@ -43,3 +43,8 @@ foreach i = [0,4,8,12] in {
 def FVReg : RegisterClass<"SH", [v4f32], 128, (add FV0,FV4,FV8,FV12)>;
 
 def XMTRX : SHReg<0, "xmtrx">;
+
+foreach i = 0-15 in { def CP0R#i : SHReg<i, "cp0_r"#i>; }
+def CP0Reg : RegisterClass<"SH", [i32], 32, (sequence "CP0R%u", 0, 15)>;
+foreach i = 0-15 in { def CPIR#i : SHReg<i, "cpi_r"#i>; }
+def CPIReg : RegisterClass<"SH", [i32], 32, (sequence "CPIR%u", 0, 15)>;

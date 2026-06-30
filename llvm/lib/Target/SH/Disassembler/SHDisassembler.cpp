@@ -89,6 +89,24 @@ static DecodeStatus DecodeFRegRegisterClass(MCInst &Inst, unsigned RegNo,
   return MCDisassembler::Success;
 }
 
+static DecodeStatus DecodeCP0RegRegisterClass(MCInst &Inst, unsigned RegNo,
+                                              uint64_t Address,
+                                              const MCDisassembler *Decoder) {
+  if (RegNo > 15)
+    return MCDisassembler::Fail;
+  Inst.addOperand(MCOperand::createReg(SH::CP0R0 + RegNo));
+  return MCDisassembler::Success;
+}
+
+static DecodeStatus DecodeCPIRegRegisterClass(MCInst &Inst, unsigned RegNo,
+                                              uint64_t Address,
+                                              const MCDisassembler *Decoder) {
+  if (RegNo > 15)
+    return MCDisassembler::Fail;
+  Inst.addOperand(MCOperand::createReg(SH::CPIR0 + RegNo));
+  return MCDisassembler::Success;
+}
+
 // fmac FR0,FRm,FRn: 1111 nnnn mmmm 1110; InOperandList=(FR0Fixed, FRm, FRn).
 static DecodeStatus decodeFmacFR0(MCInst &Inst, unsigned Insn, uint64_t Address,
                                    const MCDisassembler *Decoder) {

@@ -359,6 +359,17 @@ MCRegister SHAsmParser::matchRegisterByName(StringRef Name) {
       return MCRegister();
     }
   }
+  // J-core coprocessor registers cp0_rN / cpi_rN (N = 0..15).
+  if (Lower.starts_with("cp0_r")) {
+    StringRef Rest = Lower.drop_front(5); unsigned N;
+    if (!Rest.getAsInteger(10, N) && N <= 15) return MCRegister(SH::CP0R0 + N);
+    return MCRegister();
+  }
+  if (Lower.starts_with("cpi_r")) {
+    StringRef Rest = Lower.drop_front(5); unsigned N;
+    if (!Rest.getAsInteger(10, N) && N <= 15) return MCRegister(SH::CPIR0 + N);
+    return MCRegister();
+  }
   // Double-precision drN/xdN (N even, 0..14) — check before 'fr'/'r'.
   if (Lower.size() >= 3 && Lower.starts_with("dr")) {
     StringRef Rest = Lower.drop_front(2);
@@ -679,7 +690,7 @@ bool SHAsmParser::parseOperand(OperandVector &Operands, StringRef Mnemonic) {
   if (Parser.getTok().is(AsmToken::Identifier)) {
     static const StringRef SpecialRegs[] = {
         "sr", "gbr", "vbr", "ssr", "spc", "tbr", "mach", "macl", "pr",
-        "sgr", "dbr", "pteh", "ptel", "asidr", "tsbptr"};
+        "sgr", "dbr", "pteh", "ptel", "asidr", "tsbptr", "cp0_com", "cpi_com"};
     StringRef TokStr = Parser.getTok().getString();
     for (StringRef R : SpecialRegs) {
       if (TokStr.equals_insensitive(R)) {
