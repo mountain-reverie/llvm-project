@@ -98,14 +98,9 @@ static DecodeStatus DecodeCP0RegRegisterClass(MCInst &Inst, unsigned RegNo,
   return MCDisassembler::Success;
 }
 
-static DecodeStatus DecodeCPIRegRegisterClass(MCInst &Inst, unsigned RegNo,
-                                              uint64_t Address,
-                                              const MCDisassembler *Decoder) {
-  if (RegNo > 15)
-    return MCDisassembler::Fail;
-  Inst.addOperand(MCOperand::createReg(SH::CPIR0 + RegNo));
-  return MCDisassembler::Success;
-}
+// No DecodeCPIRegRegisterClass: every CPI instruction reuses an SH4A FP
+// encoding (flds/fsts/lds-fpul/sts-fpul) and is emitted isAsmParserOnly, so the
+// CPIReg class is never decoded — a decoder would be dead code (-Wunused).
 
 // fmac FR0,FRm,FRn: 1111 nnnn mmmm 1110; InOperandList=(FR0Fixed, FRm, FRn).
 static DecodeStatus decodeFmacFR0(MCInst &Inst, unsigned Insn, uint64_t Address,
