@@ -4662,7 +4662,7 @@ def LDS_L_MemPostInc_FixedReg_3 : Instruction {
   let Predicates = [HasSH1];
 }
 
-def LDTBL : Instruction {
+def LDTLB : Instruction {
   let Namespace = "SH";
   bits<16> Inst;
   let Size = 2;
@@ -4685,7 +4685,7 @@ def LDTBL : Instruction {
   let Inst{0} = 0;
   dag OutOperandList = (outs);
   dag InOperandList = (ins );
-  let AsmString = "ldtbl";
+  let AsmString = "ldtlb";
   let Predicates = [HasSH3];
 }
 
