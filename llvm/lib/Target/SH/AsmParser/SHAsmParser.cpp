@@ -679,7 +679,7 @@ bool SHAsmParser::parseOperand(OperandVector &Operands, StringRef Mnemonic) {
   if (Parser.getTok().is(AsmToken::Identifier)) {
     static const StringRef SpecialRegs[] = {
         "sr", "gbr", "vbr", "ssr", "spc", "tbr", "mach", "macl", "pr",
-        "sgr", "dbr"};
+        "sgr", "dbr", "pteh", "ptel", "asidr", "tsbptr"};
     StringRef TokStr = Parser.getTok().getString();
     for (StringRef R : SpecialRegs) {
       if (TokStr.equals_insensitive(R)) {

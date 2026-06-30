@@ -7528,6 +7528,7 @@ def STC_FixedReg_GPR_11 : Instruction {
   bits<16> Inst;
   let Size = 2;
   let DecoderNamespace = "SH";
+  let isAsmParserOnly = 1; // encoding 0x0063 conflicts with SH4A MOVLI.L
   bits<4> rn;
   let Inst{15} = 0;
   let Inst{14} = 0;
@@ -7553,6 +7554,7 @@ def STC_FixedReg_GPR_12 : Instruction {
   bits<16> Inst;
   let Size = 2;
   let DecoderNamespace = "SH";
+  let isAsmParserOnly = 1; // encoding 0x0073 conflicts with SH4A MOVCO.L
   bits<4> rn;
   let Inst{15} = 0;
   let Inst{14} = 0;
