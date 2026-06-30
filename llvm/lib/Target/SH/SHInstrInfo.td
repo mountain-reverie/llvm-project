@@ -35,7 +35,7 @@ def MOV_Imm_GPR : Instruction {
   let Inst{7-0} = imm;
   let Inst{11-8} = rn;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn);
+  dag InOperandList = (ins SHImm8:$imm, GPR:$rn);
   let AsmString = "mov\t${imm}, ${rn}";
   let Predicates = [HasSH1];
 }
@@ -59,7 +59,7 @@ def MOVI20_Imm_GPR : Instruction {
   let Inst{15-0} = imm{15-0};
   let Inst{27-24} = rn;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn);
+  dag InOperandList = (ins SHImm20:$imm, GPR:$rn);
   let AsmString = "movi20\t${imm}, ${rn}";
   let Predicates = [HasSH2A];
 }
@@ -83,7 +83,7 @@ def MOVI20S_Imm_GPR : Instruction {
   let Inst{15-0} = imm{15-0};
   let Inst{27-24} = rn;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn);
+  dag InOperandList = (ins SHImm20:$imm, GPR:$rn);
   let AsmString = "movi20s\t${imm}, ${rn}";
   let Predicates = [HasSH2A];
 }
@@ -1602,7 +1602,7 @@ def BAND_B_Imm_MemDisp : Instruction {
   let Inst{27-24} = rn;
   let Inst{11-0} = disp;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  dag InOperandList = (ins SHImm3:$imm, GPR:$rn, memdisp_b12:$disp);
   let AsmString = "band.b\t${imm}, @(${disp}, ${rn})";
   let Predicates = [HasSH2A];
 }
@@ -1632,7 +1632,7 @@ def BANDNOT_B_Imm_MemDisp : Instruction {
   let Inst{27-24} = rn;
   let Inst{11-0} = disp;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  dag InOperandList = (ins SHImm3:$imm, GPR:$rn, memdisp_b12:$disp);
   let AsmString = "bandnot.b\t${imm}, @(${disp}, ${rn})";
   let Predicates = [HasSH2A];
 }
@@ -1662,7 +1662,7 @@ def BCLR_B_Imm_MemDisp : Instruction {
   let Inst{27-24} = rn;
   let Inst{11-0} = disp;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  dag InOperandList = (ins SHImm3:$imm, GPR:$rn, memdisp_b12:$disp);
   let AsmString = "bclr.b\t${imm}, @(${disp}, ${rn})";
   let Predicates = [HasSH2A];
 }
@@ -1686,7 +1686,7 @@ def BCLR_Imm_GPR : Instruction {
   let Inst{2-0} = imm;
   let Inst{7-4} = rn;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn);
+  dag InOperandList = (ins SHImm3:$imm, GPR:$rn);
   let AsmString = "bclr\t${imm}, ${rn}";
   let Predicates = [HasSH2A];
 }
@@ -1716,7 +1716,7 @@ def BLD_B_Imm_MemDisp : Instruction {
   let Inst{27-24} = rn;
   let Inst{11-0} = disp;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  dag InOperandList = (ins SHImm3:$imm, GPR:$rn, memdisp_b12:$disp);
   let AsmString = "bld.b\t${imm}, @(${disp}, ${rn})";
   let Predicates = [HasSH2A];
 }
@@ -1740,7 +1740,7 @@ def BLD_Imm_GPR : Instruction {
   let Inst{2-0} = imm;
   let Inst{7-4} = rn;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn);
+  dag InOperandList = (ins SHImm3:$imm, GPR:$rn);
   let AsmString = "bld\t${imm}, ${rn}";
   let Predicates = [HasSH2A];
 }
@@ -1770,7 +1770,7 @@ def BLDNOT_B_Imm_MemDisp : Instruction {
   let Inst{27-24} = rn;
   let Inst{11-0} = disp;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  dag InOperandList = (ins SHImm3:$imm, GPR:$rn, memdisp_b12:$disp);
   let AsmString = "bldnot.b\t${imm}, @(${disp}, ${rn})";
   let Predicates = [HasSH2A];
 }
@@ -1800,7 +1800,7 @@ def BOR_B_Imm_MemDisp : Instruction {
   let Inst{27-24} = rn;
   let Inst{11-0} = disp;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  dag InOperandList = (ins SHImm3:$imm, GPR:$rn, memdisp_b12:$disp);
   let AsmString = "bor.b\t${imm}, @(${disp}, ${rn})";
   let Predicates = [HasSH2A];
 }
@@ -1830,7 +1830,7 @@ def BORNOT_B_Imm_MemDisp : Instruction {
   let Inst{27-24} = rn;
   let Inst{11-0} = disp;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  dag InOperandList = (ins SHImm3:$imm, GPR:$rn, memdisp_b12:$disp);
   let AsmString = "bornot.b\t${imm}, @(${disp}, ${rn})";
   let Predicates = [HasSH2A];
 }
@@ -1860,7 +1860,7 @@ def BSET_B_Imm_MemDisp : Instruction {
   let Inst{27-24} = rn;
   let Inst{11-0} = disp;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  dag InOperandList = (ins SHImm3:$imm, GPR:$rn, memdisp_b12:$disp);
   let AsmString = "bset.b\t${imm}, @(${disp}, ${rn})";
   let Predicates = [HasSH2A];
 }
@@ -1884,7 +1884,7 @@ def BSET_Imm_GPR : Instruction {
   let Inst{2-0} = imm;
   let Inst{7-4} = rn;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn);
+  dag InOperandList = (ins SHImm3:$imm, GPR:$rn);
   let AsmString = "bset\t${imm}, ${rn}";
   let Predicates = [HasSH2A];
 }
@@ -1914,7 +1914,7 @@ def BST_B_Imm_MemDisp : Instruction {
   let Inst{27-24} = rn;
   let Inst{11-0} = disp;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  dag InOperandList = (ins SHImm3:$imm, GPR:$rn, memdisp_b12:$disp);
   let AsmString = "bst.b\t${imm}, @(${disp}, ${rn})";
   let Predicates = [HasSH2A];
 }
@@ -1938,7 +1938,7 @@ def BST_Imm_GPR : Instruction {
   let Inst{2-0} = imm;
   let Inst{7-4} = rn;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn);
+  dag InOperandList = (ins SHImm3:$imm, GPR:$rn);
   let AsmString = "bst\t${imm}, ${rn}";
   let Predicates = [HasSH2A];
 }
@@ -1968,7 +1968,7 @@ def BXOR_B_Imm_MemDisp : Instruction {
   let Inst{27-24} = rn;
   let Inst{11-0} = disp;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn, memdisp_b12:$disp);
+  dag InOperandList = (ins SHImm3:$imm, GPR:$rn, memdisp_b12:$disp);
   let AsmString = "bxor.b\t${imm}, @(${disp}, ${rn})";
   let Predicates = [HasSH2A];
 }
@@ -2010,7 +2010,7 @@ def ADD_Imm_GPR : Instruction {
   let Inst{7-0} = imm;
   let Inst{11-8} = rn;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm, GPR:$rn);
+  dag InOperandList = (ins SHImm8:$imm, GPR:$rn);
   let AsmString = "add\t${imm}, ${rn}";
   let Predicates = [HasSH1];
 }
@@ -2077,7 +2077,7 @@ def CMP_EQ_Imm_R0Fixed : Instruction {
   let Inst{8} = 0;
   let Inst{7-0} = imm;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm);
+  dag InOperandList = (ins SHImm8:$imm);
   let AsmString = "cmp/eq\t${imm}, r0";
   let Predicates = [HasSH1];
 }
@@ -2950,7 +2950,7 @@ def AND_Imm_R0Fixed : Instruction {
   let Inst{8} = 1;
   let Inst{7-0} = imm;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm);
+  dag InOperandList = (ins SHImm8:$imm);
   let AsmString = "and\t${imm}, r0";
   let Predicates = [HasSH1];
 }
@@ -2971,7 +2971,7 @@ def AND_B_Imm_MemR0GBR : Instruction {
   let Inst{8} = 1;
   let Inst{7-0} = imm;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm);
+  dag InOperandList = (ins SHImm8:$imm);
   let AsmString = "and.b\t${imm}, @(r0,gbr)";
   let Predicates = [HasSH1];
 }
@@ -3038,7 +3038,7 @@ def OR_Imm_R0Fixed : Instruction {
   let Inst{8} = 1;
   let Inst{7-0} = imm;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm);
+  dag InOperandList = (ins SHImm8:$imm);
   let AsmString = "or\t${imm}, r0";
   let Predicates = [HasSH1];
 }
@@ -3059,7 +3059,7 @@ def OR_B_Imm_MemR0GBR : Instruction {
   let Inst{8} = 1;
   let Inst{7-0} = imm;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm);
+  dag InOperandList = (ins SHImm8:$imm);
   let AsmString = "or.b\t${imm}, @(r0,gbr)";
   let Predicates = [HasSH1];
 }
@@ -3128,7 +3128,7 @@ def TST_Imm_R0Fixed : Instruction {
   let Inst{8} = 0;
   let Inst{7-0} = imm;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm);
+  dag InOperandList = (ins SHImm8:$imm);
   let AsmString = "tst\t${imm}, r0";
   let Predicates = [HasSH1];
 }
@@ -3149,7 +3149,7 @@ def TST_B_Imm_MemR0GBR : Instruction {
   let Inst{8} = 0;
   let Inst{7-0} = imm;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm);
+  dag InOperandList = (ins SHImm8:$imm);
   let AsmString = "tst.b\t${imm}, @(r0,gbr)";
   let Predicates = [HasSH1];
 }
@@ -3193,7 +3193,7 @@ def XOR_Imm_R0Fixed : Instruction {
   let Inst{8} = 0;
   let Inst{7-0} = imm;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm);
+  dag InOperandList = (ins SHImm8:$imm);
   let AsmString = "xor\t${imm}, r0";
   let Predicates = [HasSH1];
 }
@@ -3214,7 +3214,7 @@ def XOR_B_Imm_MemR0GBR : Instruction {
   let Inst{8} = 0;
   let Inst{7-0} = imm;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm);
+  dag InOperandList = (ins SHImm8:$imm);
   let AsmString = "xor.b\t${imm}, @(r0,gbr)";
   let Predicates = [HasSH1];
 }
@@ -5642,7 +5642,7 @@ def TRAPA_Imm : Instruction {
   let Inst{8} = 1;
   let Inst{7-0} = imm;
   dag OutOperandList = (outs);
-  dag InOperandList = (ins SHImm:$imm);
+  dag InOperandList = (ins SHImm8:$imm);
   let AsmString = "trapa\t${imm}";
   let Predicates = [HasSH1];
 }

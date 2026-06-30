@@ -58,6 +58,35 @@ public:
   bool isSHImm()      const { return Kind == k_Immediate; }
   bool isDisp()       const { return Kind == k_Immediate; }
 
+  // Per-width immediate predicates. A constant must fit in N bits as either a
+  // signed or unsigned value (lenient, matching GNU sh-as); this catches gross
+  // overflow (e.g. #9999 in an 8-bit field) while accepting #-1 and #255.
+  // Non-constant expressions (symbols) defer to the fixup path.
+  bool isSHImm3() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return isInt<3>(V) || isUInt<3>(V);
+    }
+    return true;
+  }
+  bool isSHImm8() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return isInt<8>(V) || isUInt<8>(V);
+    }
+    return true;
+  }
+  bool isSHImm20() const {
+    if (Kind != k_Immediate) return false;
+    if (const auto *CE = dyn_cast<MCConstantExpr>(Imm.Val)) {
+      int64_t V = CE->getValue();
+      return isInt<20>(V) || isUInt<20>(V);
+    }
+    return true;
+  }
+
   // Per-class displacement predicates. Non-constant expressions (symbols)
   // pass for pcdisp* (the fixup path handles range checking); all others
   // require a known constant in the valid range.

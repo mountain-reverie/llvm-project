@@ -24,14 +24,25 @@ def HasJ1   : Predicate<"Subtarget->hasJ1()">;
 def HasJ2   : Predicate<"Subtarget->hasJ2()">;
 def HasJ4   : Predicate<"Subtarget->hasJ4()">;
 
-// Immediate operand for SH (AsmParser match + default print/decode).
-def SHImmAsmOperand : AsmOperandClass {
-  let Name = "SHImm";
+// Per-width immediate operands for SH. Each width N validates the parsed
+// immediate fits in N bits (signed or unsigned, lenient like GNU sh-as),
+// catching gross overflow (e.g. #9999 in an 8-bit field) at parse time.
+class SHImmAsmOperand<int N> : AsmOperandClass {
+  let Name = "SHImm"#N;
   let RenderMethod = "addImmOperands";
+  let PredicateMethod = "isSHImm"#N;
+  let DiagnosticType = "InvalidImm"#N;
 }
-def SHImm : Operand<i32> {
-  let ParserMatchClass = SHImmAsmOperand;
+def SHImm3AsmOperand  : SHImmAsmOperand<3>;
+def SHImm8AsmOperand  : SHImmAsmOperand<8>;
+def SHImm20AsmOperand : SHImmAsmOperand<20>;
+
+class SHImmOperand<AsmOperandClass MC> : Operand<i32> {
+  let ParserMatchClass = MC;
 }
+def SHImm3  : SHImmOperand<SHImm3AsmOperand>;
+def SHImm8  : SHImmOperand<SHImm8AsmOperand>;
+def SHImm20 : SHImmOperand<SHImm20AsmOperand>;
 
 // Pre-decrement memory operand @-Rn (holds the base register).
 def MemDecAsmOperand : AsmOperandClass {
