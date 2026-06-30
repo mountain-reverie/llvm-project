@@ -4,7 +4,7 @@ include "llvm/Target/Target.td"
 
 include "SHRegisterInfo.td"
 include "SHOperands.td"
-include "SHInstrInfo.td"
+include "SHDepInstrInfo.td"
 include "SHInstrAliases.td"
 
 def SHInstrInfo : InstrInfo;
