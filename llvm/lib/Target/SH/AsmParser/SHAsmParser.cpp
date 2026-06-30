@@ -319,7 +319,6 @@ private:
 
   // Custom operand parse methods (invoked by generated MatchOperandParserImpl).
   ParseStatus parseMemDec(OperandVector &Operands);
-  ParseStatus parseMemR0Idx(OperandVector &Operands);
   ParseStatus parseMemR0Fixed(OperandVector &Operands);
   ParseStatus parseMemIncR15(OperandVector &Operands);
 
@@ -449,12 +448,6 @@ ParseStatus SHAsmParser::parseMemDec(OperandVector &Operands) {
            ParseStatus::Failure;
   Operands.push_back(SHOperand::createMemDec(Reg, S, RE));
   return ParseStatus::Success;
-}
-
-// parseMemR0Idx — intentionally a no-op; all @(r0,rN)/@(r0,gbr) forms are
-// handled by parseOperand so this custom parser never consumes tokens.
-ParseStatus SHAsmParser::parseMemR0Idx(OperandVector &Operands) {
-  return ParseStatus::NoMatch;
 }
 
 // parseMemR0Fixed — matches @r0 (without '+') for cas.l Rm,Rn,@R0.

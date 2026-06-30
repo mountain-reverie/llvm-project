@@ -738,6 +738,11 @@ enum {
 #include "ELFRelocs/SystemZ.def"
 };
 
+// ELF Relocation types for SH.
+enum {
+#include "ELFRelocs/SH.def"
+};
+
 // SPARC Specific e_flags
 enum : unsigned {
   // ELF extension mask.

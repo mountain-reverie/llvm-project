@@ -40,9 +40,9 @@ def MemDecAsmOperand : AsmOperandClass {
   let RenderMethod = "addRegOperands";
 }
 // R0-indexed memory operand @(R0,Rn) (holds the index register).
+// No ParserMethod: falls back to parseOperand (all @(r0,rN) forms handled there).
 def MemR0IdxAsmOperand : AsmOperandClass {
   let Name = "MemR0Idx";
-  let ParserMethod = "parseMemR0Idx";
   let RenderMethod = "addRegOperands";
 }
 

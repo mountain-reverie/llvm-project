@@ -12,10 +12,11 @@ tablegen(LLVM SHGenSubtargetInfo.inc -gen-subtarget)
 
 add_public_tablegen_target(SHCommonTableGen)
 
-# Stub codegen library so that cmake component expansion (LLVM-Config.cmake)
-# finds LLVMSHCodeGen when a tool links ${LLVM_TARGETS_TO_BUILD}.
+# MC-only target: no codegen. SHTargetMachine.cpp is an empty translation unit
+# that satisfies CMake's AllTargetsCodeGens expansion (LLVM-Config.cmake requires
+# LLVMSHCodeGen to exist when SH is in LLVM_TARGETS_TO_BUILD).
 add_llvm_target(SHCodeGen
-  SHTargetMachineStub.cpp
+  SHTargetMachine.cpp
 
   LINK_COMPONENTS
   SHDesc

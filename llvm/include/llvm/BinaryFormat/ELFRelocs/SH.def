@@ -1,0 +1,13 @@
+
+#ifndef ELF_RELOC
+#error "ELF_RELOC must be defined"
+#endif
+
+// SH ELF relocations used by the MC backend.
+// Values from binutils include/elf/sh.h.
+// The full standard SH relocation table (~160 entries) is a follow-up.
+ELF_RELOC(R_SH_NONE,     0)
+ELF_RELOC(R_SH_DIR8WPN,  3)
+ELF_RELOC(R_SH_IND12W,   4)
+ELF_RELOC(R_SH_DIR8WPL,  5)
+ELF_RELOC(R_SH_DIR8WPZ,  6)
