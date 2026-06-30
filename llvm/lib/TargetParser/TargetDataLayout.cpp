@@ -573,6 +573,9 @@ std::string Triple::computeDataLayout(StringRef ABIName) const {
     return computeBPFDataLayout(*this);
   case Triple::csky:
     return computeCSKYDataLayout(*this);
+  case Triple::sh:
+    // SH / J-core: big-endian, 32-bit.
+    return "E-p:32:32-i8:8:32-i16:16:32-i64:32-f64:32-a:0:32-n32";
   case Triple::dxil:
     return "e-m:e-ve-p:32:32-i1:32-i8:8-i16:16-i32:32-i64:64-f16:16-"
            "f32:32-f64:64-n8:16:32:64";

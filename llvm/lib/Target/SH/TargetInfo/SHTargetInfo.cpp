@@ -18,8 +18,7 @@ Target &llvm::getTheSHTarget() {
 }
 
 extern "C" LLVM_ABI LLVM_EXTERNAL_VISIBILITY void LLVMInitializeSHTargetInfo() {
-  // Triple::UnknownArch: no existing LLVM triple for SH/J-core yet.
-  // llvm-mc with -triple sh (unrecognised → UnknownArch) will match.
-  RegisterTarget<Triple::UnknownArch, /*HasJIT=*/false> X(
+  // Triple::sh: SH / J-core, big-endian (matches the J-core backend output).
+  RegisterTarget<Triple::sh, /*HasJIT=*/false> X(
       getTheSHTarget(), "sh", "SH / J-core", "SH");
 }

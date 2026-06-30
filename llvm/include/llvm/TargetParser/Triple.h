@@ -114,7 +114,8 @@ public:
     renderscript32, // 32-bit RenderScript
     renderscript64, // 64-bit RenderScript
     ve,             // NEC SX-Aurora Vector Engine
-    LastArchType = ve
+    sh,             // SH / J-core (SuperH, big-endian)
+    LastArchType = sh
   };
   enum SubArchType {
     NoSubArch,
@@ -1117,6 +1118,9 @@ public:
 
   // Tests whether the target is CSKY
   bool isCSKY() const { return getArch() == Triple::csky; }
+
+  // Tests whether the target is SH / J-core
+  bool isSH() const { return getArch() == Triple::sh; }
 
   /// Tests whether the target is the Apple "arm64e" AArch64 subarch.
   bool isArm64e() const {
