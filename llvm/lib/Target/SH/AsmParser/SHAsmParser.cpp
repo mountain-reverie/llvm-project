@@ -55,7 +55,6 @@ public:
   bool isToken()      const override { return Kind == k_Token; }
   bool isReg()        const override { return Kind == k_Register; }
   bool isImm()        const override { return Kind == k_Immediate; }
-  bool isSHImm()      const { return Kind == k_Immediate; }
   bool isDisp()       const { return Kind == k_Immediate; }
 
   // Per-width immediate predicates. A constant must fit in N bits as either a
@@ -361,6 +360,10 @@ public:
 
 } // end anonymous namespace
 
+// Forward declaration — MatchRegisterName is emitted by GET_REGISTER_MATCHER
+// at end of file; matchRegisterByName calls it as a primary lookup path.
+static MCRegister MatchRegisterName(StringRef Name);
+
 // Explicit even-register tables for DR/XD (not enum-contiguous).
 static const MCPhysReg DRParserTable[8] = {
     SH::DR0, SH::DR2, SH::DR4, SH::DR6,
@@ -372,6 +375,9 @@ static const MCPhysReg FVParserTable[4] = {SH::FV0, SH::FV4, SH::FV8, SH::FV12};
 
 MCRegister SHAsmParser::matchRegisterByName(StringRef Name) {
   StringRef Lower = Name.lower();
+  // Try TableGen-generated table first (covers GPR/FPR/DR/XD/FV/CP0/CPI/XMTRX).
+  if (MCRegister R = MatchRegisterName(Lower))
+    return R;
   // Floating-point control registers.
   if (Lower == "fpul")  return MCRegister(SH::FPUL);
   if (Lower == "fpscr") return MCRegister(SH::FPSCR);

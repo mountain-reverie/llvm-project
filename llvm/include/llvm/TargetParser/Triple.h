@@ -1119,7 +1119,7 @@ public:
   // Tests whether the target is CSKY
   bool isCSKY() const { return getArch() == Triple::csky; }
 
-  // Tests whether the target is SH / J-core
+  /// Tests whether the target is SH / J-core.
   bool isSH() const { return getArch() == Triple::sh; }
 
   /// Tests whether the target is the Apple "arm64e" AArch64 subarch.

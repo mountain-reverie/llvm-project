@@ -67,6 +67,9 @@ static DecodeStatus DecodeGPRRegisterClass(MCInst &Inst, unsigned RegNo,
   return MCDisassembler::Success;
 }
 
+// Lowercase helpers below are ad-hoc (non-TableGen); Decode* names above are
+// required by TableGen DecoderMethod references and must not be renamed.
+
 // Used by MemDec and MemR0Idx operands: decode RegNo -> register operand.
 static DecodeStatus decodeGPRAsMem(MCInst &Inst, unsigned RegNo,
                                    uint64_t Address,
